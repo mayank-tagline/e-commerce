@@ -167,10 +167,18 @@ def buyButton(product_id):
     return render_template('buy.html', product = product)
 
 
+@app.route('/payment')
+def payment():
+    return render_template('payment.html')
 
-
+@app.route('/success')
+def success():
+    return render_template('success.html')
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(debug=True)
+
+
+
