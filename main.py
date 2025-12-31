@@ -73,9 +73,6 @@ def home():
 
     if user.user_type == 's':
         products = Product.query.filter_by(seller_id =seller_id).all()
-        print(user.username)
-        print(user.user_type)
-        print(products)
         return render_template("home.html",user = user , products = products)
     
     else:
@@ -125,9 +122,10 @@ def register():
     return render_template("register.html" , form = form)
 
 
-@app.route('/addproduct', methods = ['GET', 'POST'])
-def addproduct():
+@app.route('/addproduct/<seller_id>', methods = ['GET', 'POST'])
+def addproduct(seller_id):
     form = AddProduct()
+    form.product_seller_id.data = seller_id
     if form.validate_on_submit():
         # exist = Product.query.filter_by(product_name = form.product_name.data).first()
         file = form.product_image.data
@@ -161,6 +159,16 @@ def addproduct():
 def logout():
     session.pop("user",None)
     return redirect(url_for('home'))
+
+
+@app.route('/buy/<product_id>')
+def buyButton(product_id):
+    product = Product.query.filter_by(id = product_id).first()
+    return render_template('buy.html', product = product)
+
+
+
+
 
 if __name__ == "__main__":
     with app.app_context():

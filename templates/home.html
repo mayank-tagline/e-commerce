@@ -8,20 +8,21 @@
 <body>
     <header>
         <div>home page</div>
-
-        {%  if user  %}
-            
-            <p> user id is : {{user.id}}</p>
-            <p> user name is : {{user.username}}</p>
-            <p>user type is :{{user.user_type}}</p>
-            <p>user password is : {{user.password}}</p>
-
-            {%  endif  %}
-        </header>
         
+        {%  if user  %}
+        
+        <p> user id is : {{user.id}}</p>
+        <p> user name is : {{user.username}}</p>
+        <p>user type is :{{user.user_type}}</p>
+        <p>user password is : {{user.password}}</p>
+        
+        {%  endif  %}
+    </header>
+    
+    <div class="logout"><h2><a href="/logout">logout</a></h2></div>
         {%  if user.user_type== 's' %}
             <p>user is seller</p>
-            <a href="/addproduct">add your product </a>
+            <a href="{{ url_for ('addproduct' , seller_id= user.id)}}">add your product </a>
             
             {%  if products  %}
                 {% for product in products %}
@@ -33,7 +34,7 @@
                         >
             
                         <p><strong>Name:</strong> {{ product.product_name }}</p>
-                        <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
+                        <p><strong>Price:</strong> ${{ product.product_price }}</p>
                         <p><strong>Details:</strong> {{ product.product_details }}</p>
                         <p><strong>Category:</strong> {{ product.product_category }}</p>
                         <p><strong>Gender:</strong> {{ product.product_gender }}</p>
@@ -62,6 +63,9 @@
                         <p><strong>Gender:</strong> {{ product.product_gender }}</p>
                         <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                         <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+                        <p><strong>product ID:</strong> {{ product.id }}</p>
+                        <div class="buybutton"><a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a></div>
+
 
                     </div>
 
@@ -72,11 +76,5 @@
             
         {%  endif  %}
 
-
-        
-    <div class="logout"><h2><a href="/logout">logout</a></h2></div>
-    
 </body>
 </html>
-
-
