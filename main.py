@@ -218,7 +218,15 @@ def update(product_id):
     return render_template('update.html', form=form, product=product)
 
 
-@app.route('/delete/<int:product_id>')
+@app.route('/cancel')
+def cancel():
+    return redirect(url_for('home'))
+
+
+
+
+
+@app.route('/delete/<int:product_id>',methods = ['POST','GET'])
 def delete(product_id):
     product = Product.query.get_or_404(product_id)
 

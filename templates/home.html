@@ -58,8 +58,16 @@
         <p><strong>Stock:</strong> {{ product.product_stock }}</p>
         <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
 
-        <h3><a href="{{ url_for ('update' , product_id = product.id)  }}">update your product</a></h3>
-        <h3 id="delete"><a href="{{ url_for ('delete' , product_id = product.id)   }}">delete your product</a></h3>
+        <h3>
+            <a href="{{ url_for ('update' , product_id = product.id)  }}">update your product</a>
+        </h3>
+
+        <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form">
+
+            <button type="submit">Delete your product</button>
+
+        </form>
+
 
     </div>
 
@@ -83,7 +91,9 @@
         <p><strong>Stock:</strong> {{ product.product_stock }}</p>
         <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
         <p><strong>product ID:</strong> {{ product.id }}</p>
-        <div class="buybutton"><a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a></div>
+        <div class="buybutton">
+            <a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a>
+        </div>
 
 
     </div>
@@ -95,11 +105,22 @@
 
     {% endif %}
 
-
     <script>
-        const deletebtn = document.getElementById('delete');
-        deletebtn.addEventListener('onClick', () => { alert("are you sure?") })
+        document.addEventListener('DOMContentLoaded', function () {
+
+            const forms = document.querySelectorAll('.delete-form');
+
+            forms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm('Are you sure you want to delete this product?')) {
+                        e.preventDefault(); // STOP delete
+                    }
+                });
+            });
+
+        });
     </script>
+
 
 </body>
 
