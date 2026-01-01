@@ -1,80 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>home page</title>
 </head>
+
 <body>
     <header>
+        <div class="header">
+            <div class="logo">
+
+            </div>
+            <div class="favorite">
+
+            </div>
+            <div class="logout">
+
+            </div>
+            <div class="profile">
+
+            </div>
+        </div>
         <div>home page</div>
-        
-        {%  if user  %}
-        
+
+        {% if user %}
+
         <p> user id is : {{user.id}}</p>
         <p> user name is : {{user.username}}</p>
         <p>user type is :{{user.user_type}}</p>
         <p>user password is : {{user.password}}</p>
-        
-        {%  endif  %}
+
+        {% endif %}
     </header>
-    
-    <div class="logout"><h2><a href="/logout">logout</a></h2></div>
-        {%  if user.user_type== 's' %}
-            <p>user is seller</p>
-            <a href="{{ url_for ('addproduct' , seller_id= user.id)}}">add your product </a>
-            
-            {%  if products  %}
-                {% for product in products %}
-                    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
-            
-                        <img 
-                            src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
-                            style="width: 100%; height: auto; margin-bottom: 10px;"
-                        >
-            
-                        <p><strong>Name:</strong> {{ product.product_name }}</p>
-                        <p><strong>Price:</strong> ${{ product.product_price }}</p>
-                        <p><strong>Details:</strong> {{ product.product_details }}</p>
-                        <p><strong>Category:</strong> {{ product.product_category }}</p>
-                        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
-                        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
-                        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
-            
-                    </div>
-                {% endfor %}
-                
-            {%  endif %}
-
-        {%  else  %}
-            {%  if products  %}
-                {% for product in products %}
-                    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
-
-                        <img 
-                            src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
-                            style="width: 100%; height: auto; margin-bottom: 10px;"
-                        >
-
-                        <p><strong>Name:</strong> {{ product.product_name }}</p>
-                        <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
-                        <p><strong>Details:</strong> {{ product.product_details }}</p>
-                        <p><strong>Category:</strong> {{ product.product_category }}</p>
-                        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
-                        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
-                        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
-                        <p><strong>product ID:</strong> {{ product.id }}</p>
-                        <div class="buybutton"><a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a></div>
 
 
-                    </div>
+    <div class="logout">
+        <h2><a href="/logout">logout</a></h2>
+    </div>
+    {% if user.user_type== 's' %}
+    <p>user is seller</p>
+    <a href="{{ url_for ('addproduct' , seller_id= user.id)}}">add your product </a>
 
-                {% endfor %}
-                
-            {%  endif %}
-            
-            
-        {%  endif  %}
+    {% if products %}
+    {% for product in products %}
+    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
+
+        <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
+            style="width: 100%; height: auto; margin-bottom: 10px;">
+
+        <p><strong>Name:</strong> {{ product.product_name }}</p>
+        <p><strong>Price:</strong> ${{ product.product_price }}</p>
+        <p><strong>Details:</strong> {{ product.product_details }}</p>
+        <p><strong>Category:</strong> {{ product.product_category }}</p>
+        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+
+        <h3><a href="{{ url_for ('update' , product_id = product.id)  }}">update your product</a></h3>
+        <h3 id="delete"><a href="{{ url_for ('delete' , product_id = product.id)   }}">delete your product</a></h3>
+
+    </div>
+
+    {% endfor %}
+
+    {% endif %}
+
+    {% else %}
+    {% if products %}
+    {% for product in products %}
+    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
+
+        <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
+            style="width: 100%; height: auto; margin-bottom: 10px;">
+
+        <p><strong>Name:</strong> {{ product.product_name }}</p>
+        <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
+        <p><strong>Details:</strong> {{ product.product_details }}</p>
+        <p><strong>Category:</strong> {{ product.product_category }}</p>
+        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+        <p><strong>product ID:</strong> {{ product.id }}</p>
+        <div class="buybutton"><a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a></div>
+
+
+    </div>
+
+    {% endfor %}
+
+    {% endif %}
+
+
+    {% endif %}
+
+
+    <script>
+        const deletebtn = document.getElementById('delete');
+        deletebtn.addEventListener('onClick', () => { alert("are you sure?") })
+    </script>
 
 </body>
+
 </html>

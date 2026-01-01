@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        {{ form.product_name.label }}<br>
+        {{ form.product_name() }}<br><br>
+
+        {{ form.product_price.label }}<br>
+        {{ form.product_price() }}<br><br>
+
+        {{ form.product_details.label }}<br>
+        {{ form.product_details() }}<br><br>
+
+        {{ form.product_category.label }}<br>
+        {{ form.product_category() }}<br><br>
+
+        {{ form.product_gender.label }}<br>
+        {{ form.product_gender() }}<br><br>
+
+        {{ form.product_stock.label }}<br>
+        {{ form.product_stock() }}<br><br>
+
+
+        {{ form.product_image.label }}<br>
+        {{ form.product_image() }}<br><br>
+
+
+        <p>Current Image:</p>
+        <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}" width="120">
+
+        <br><br>
+        {{ form.submit() }}
+    </form>
+
+
+</body>
+
+</html>

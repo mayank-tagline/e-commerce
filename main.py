@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash ,session
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.utils import secure_filename
-from forms import LoginForm ,RegisterForm ,AddProduct
+from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct
 import os
 
 
@@ -11,6 +11,8 @@ app.secret_key = "tagline"
 
 UPLOAD_FOLDER = 'static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+app.config['SECRET_KEY'] = 'tagline'
 
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
@@ -174,6 +176,60 @@ def payment():
 @app.route('/success')
 def success():
     return render_template('success.html')
+
+
+
+@app.route('/update/<int:product_id>', methods=['GET', 'POST'])
+def update(product_id):
+    product = Product.query.get_or_404(product_id)
+    form = UpdateProduct()
+
+    if request.method == 'GET':
+        form.product_name.data = product.product_name
+        form.product_price.data = product.product_price
+        form.product_details.data = product.product_details
+        form.product_category.data = product.product_category
+        form.product_gender.data = product.product_gender
+        form.product_stock.data = product.product_stock
+
+    if form.validate_on_submit():
+        product.product_name = form.product_name.data
+        product.product_price = form.product_price.data
+        product.product_details = form.product_details.data
+        product.product_category = form.product_category.data
+        product.product_gender = form.product_gender.data
+        product.product_stock = form.product_stock.data
+
+     
+        if form.product_image.data:
+            image = form.product_image.data
+            filename = secure_filename(image.filename)
+
+            image_path = os.path.join(
+                app.root_path, 'static/uploads', filename
+            )
+            image.save(image_path)
+
+            product.product_image = filename
+
+        db.session.commit()
+        return redirect(url_for('home'))
+
+    return render_template('update.html', form=form, product=product)
+
+
+@app.route('/delete/<int:product_id>')
+def delete(product_id):
+    product = Product.query.get_or_404(product_id)
+
+    if product :
+        db.session.delete(product)
+        db.session.commit()
+
+    return redirect(url_for('home'))
+
+
+
 
 if __name__ == "__main__":
     with app.app_context():

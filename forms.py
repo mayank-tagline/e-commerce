@@ -47,3 +47,35 @@ class AddProduct(FlaskForm):
     product_seller_id = IntegerField("Product seller id ", validators= [DataRequired()])
     submit = SubmitField("Add your Product")
 
+class UpdateProduct(FlaskForm):
+    product_name = StringField("Product Name", validators=[DataRequired()])
+    product_price = IntegerField(
+        "Product Price",
+        validators=[DataRequired(), NumberRange(min=1)]
+    )
+    product_details = StringField("Product Details", validators=[DataRequired()])
+
+    product_category = SelectField(
+        'Category',
+        choices=[('shirt', 'Shirt'), ('pant', 'Pant'), ('shoes', 'Shoes')],
+        validators=[InputRequired()]
+    )
+
+    product_gender = SelectField(
+        'Gender',
+        choices=[('men', 'Men'), ('women', 'Women'), ('kids', 'Kids')],
+        validators=[InputRequired()]
+    )
+
+    product_stock = IntegerField(
+        "Product Stock",
+        validators=[DataRequired(), NumberRange(min=1)]
+    )
+
+    product_image = FileField(
+        "Update Product Image",
+        validators=[FileAllowed(['jpg', 'jpeg', 'png'])]
+    )
+
+
+    submit = SubmitField("Update Product")
