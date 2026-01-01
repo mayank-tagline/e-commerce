@@ -5,123 +5,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>home page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body>
-    <header>
-        <div class="header">
-            <div class="logo">
 
-            </div>
-            <div class="favorite">
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">My Shop</div>
 
-            </div>
-            <div class="logout">
-
-            </div>
-            <div class="profile">
-
-            </div>
-        </div>
-        <div>home page</div>
-
-        {% if user %}
-
-        <p> user id is : {{user.id}}</p>
-        <p> user name is : {{user.username}}</p>
-        <p>user type is :{{user.user_type}}</p>
-        <p>user password is : {{user.password}}</p>
-
-        {% endif %}
-    </header>
-
-
-    <div class="logout">
-        <h2><a href="/logout">logout</a></h2>
-    </div>
-    {% if user.user_type== 's' %}
-    <p>user is seller</p>
-    <a href="{{ url_for ('addproduct' , seller_id= user.id)}}">add your product </a>
-
-    {% if products %}
-    {% for product in products %}
-    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
-
-        <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
-            style="width: 100%; height: auto; margin-bottom: 10px;">
-
-        <p><strong>Name:</strong> {{ product.product_name }}</p>
-        <p><strong>Price:</strong> ${{ product.product_price }}</p>
-        <p><strong>Details:</strong> {{ product.product_details }}</p>
-        <p><strong>Category:</strong> {{ product.product_category }}</p>
-        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
-        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
-        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
-
-        <h3>
-            <a href="{{ url_for ('update' , product_id = product.id)  }}">update your product</a>
-        </h3>
-
-        <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form">
-
-            <button type="submit">Delete your product</button>
-
-        </form>
-
-
-    </div>
-
-    {% endfor %}
-
-    {% endif %}
-
-    {% else %}
-    {% if products %}
-    {% for product in products %}
-    <div style="border: 1px solid #ccc; padding: 15px; width: 260px; margin: 15px;">
-
-        <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}"
-            style="width: 100%; height: auto; margin-bottom: 10px;">
-
-        <p><strong>Name:</strong> {{ product.product_name }}</p>
-        <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
-        <p><strong>Details:</strong> {{ product.product_details }}</p>
-        <p><strong>Category:</strong> {{ product.product_category }}</p>
-        <p><strong>Gender:</strong> {{ product.product_gender }}</p>
-        <p><strong>Stock:</strong> {{ product.product_stock }}</p>
-        <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
-        <p><strong>product ID:</strong> {{ product.id }}</p>
-        <div class="buybutton">
-            <a href="{{  url_for ('buyButton', product_id = product.id)}}">buy</a>
+        <div class="searchbar">
+            <input type="text" placeholder="Search products..." />
         </div>
 
-
+        <div class="right">
+            <div class="favorite">Favorite</div>
+            <div class="logout"><a href="/logout">Logout</a></div>
+            <div class="profile">Profile</div>
+        </div>
     </div>
 
-    {% endfor %}
+    <!-- LAYOUT -->
+    <div class="layout">
 
-    {% endif %}
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            
+            <div class="top">
+                <div class="home">Home</div>
+                <div class="favorite">Favorite</div>
+                <div class="profile">Profile</div>
+                {% if user.user_type == 's' %}
+                <div class="my_product">My Product</div>
+                <div class="filter">Filter</div>
+                {% else %}
+                <div class="filter">Filter</div>
+                {% endif %}
+            </div>
+            <div class="logout">Logout</div>
+        </div>
 
+        <!-- MAIN -->
+        <div class="main">
+            <h2>Products</h2>
 
-    {% endif %}
+            {% if user %}
+            <p>user id is : {{ user.id }}</p>
+            <p>user name is : {{ user.username }}</p>
+            <p>user type is : {{ user.user_type }}</p>
+            <p>user password is : {{ user.password }}</p>
+            {% endif %}
 
+            {% if user.user_type == 's' %}
+            <p>user is seller</p>
+            <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
+
+            {% if products %}
+            <div class="products">
+                {% for product in products %}
+                <div class="product-card">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
+
+                    <p><strong>Name:</strong> {{ product.product_name }}</p>
+                    <p><strong>Price:</strong> ${{ product.product_price }}</p>
+                    <p><strong>Details:</strong> {{ product.product_details }}</p>
+                    <p><strong>Category:</strong> {{ product.product_category }}</p>
+                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+
+                    <h3>
+                        <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
+                    </h3>
+
+                    <form method="post"
+                          action="{{ url_for('delete', product_id=product.id) }}"
+                          class="delete-form">
+                        <button type="submit">Delete your product</button>
+                    </form>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% else %}
+
+            {% if products %}
+            <div class="products">
+                {% for product in products %}
+                <div class="product-card">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
+
+                    <p><strong>Name:</strong> {{ product.product_name }}</p>
+                    <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
+                    <p><strong>Details:</strong> {{ product.product_details }}</p>
+                    <p><strong>Category:</strong> {{ product.product_category }}</p>
+                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+                    <p><strong>Product ID:</strong> {{ product.id }}</p>
+
+                    <div class="buybutton">
+                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- DELETE CONFIRM -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-
             const forms = document.querySelectorAll('.delete-form');
-
             forms.forEach(form => {
                 form.addEventListener('submit', function (e) {
                     if (!confirm('Are you sure you want to delete this product?')) {
-                        e.preventDefault(); // STOP delete
+                        e.preventDefault();
                     }
                 });
             });
-
         });
     </script>
 
-
 </body>
-
 </html>

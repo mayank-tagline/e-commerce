@@ -1,41 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product listing</title>
 </head>
+
 <body>
     <h2>add product </h2>
 
-    <form  method="post" enctype="multipart/form-data">
-        {{  form.hidden_tag()  }}
+    <form method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
 
-        {{  form.product_name.label  }} <br>
-        {{  form.product_name  }} <br> <br>
+        {{ form.product_name.label }} <br>
+        {{ form.product_name }} <br> <br>
 
-        {{  form.product_price.label  }} <br>
-        {{  form.product_price  }} <br> <br>
+        {{ form.product_price.label }} <br>
+        {{ form.product_price }} <br> <br>
 
-        {{  form.product_image.label  }} <br>
-        {{  form.product_image  }} <br> <br>
+        {{ form.product_image.label }} <br>
+        {{ form.product_image }} <br> <br>
 
-        {{  form.product_details.label  }} <br>
-        {{  form.product_details  }} <br> <br>
+        {{ form.product_details.label }} <br>
+        {{ form.product_details }} <br> <br>
 
-        {{  form.product_category.label  }} <br>
-        {{  form.product_category  }} <br> <br>
+        {{ form.product_category.label }} <br>
+        {{ form.product_category }} <br> <br>
 
-        {{  form.product_gender.label  }} <br>
-        {{  form.product_gender  }} <br> <br>
+        {{ form.product_gender.label }} <br>
+        {{ form.product_gender }} <br> <br>
 
-        {{  form.product_stock.label  }} <br>
-        {{  form.product_stock  }} <br> <br>
+        {{ form.product_stock.label }} <br>
+        {{ form.product_stock }} <br> <br>
 
-        {{  form.product_seller_id.label  }} <br>
-        {{  form.product_seller_id.data }} <br> <br>
+        {{ form.product_seller_id.label }} <br>
+        {{ form.product_seller_id.data }} <br> <br>
 
-        {{ form.submit}} <br>
+        {{ form.submit}}
+
+        <a href="/cancel">cancel</a>
+
     </form>
 </body>
+
 </html>
