@@ -79,3 +79,9 @@ class UpdateProduct(FlaskForm):
 
 
     submit = SubmitField("Update Product")
+
+
+class ResetPassword(FlaskForm):
+    password = PasswordField("Password", validators= [DataRequired()])
+    new_password = PasswordField("New Password ", validators=[DataRequired()])
+    submit = SubmitField("Reset Password")

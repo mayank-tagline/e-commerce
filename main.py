@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash ,session
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.utils import secure_filename
-from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct
+from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword
 import os
 
 
@@ -73,13 +73,13 @@ def home():
 
     seller_id = user.id
 
-    if user.user_type == 's':
-        products = Product.query.filter_by(seller_id =seller_id).all()
-        return render_template("home.html",user = user , products = products)
+    # if user.user_type == 's':
+    #     products = Product.query.filter_by(seller_id =seller_id).all()
+    #     return render_template("home.html",user = user , products = products)
     
-    else:
-        products = Product.query.all()
-        return render_template("home.html", user = user , products = products)
+    # else:
+    products = Product.query.all()
+    return render_template("home.html", user = user , products = products)
        
 
 
@@ -236,6 +236,80 @@ def delete(product_id):
 
     return redirect(url_for('home'))
 
+
+
+@app.route('/myproduct')
+def myproduct():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+
+    seller_id = user.id
+
+
+    products = Product.query.filter_by(seller_id =seller_id).all()
+
+
+    
+    return render_template('myproduct.html' , user = user,products = products)
+
+
+@app.route('/favorite')
+def favorite():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    return render_template('favorite.html', user = user)
+
+@app.route('/profile')
+def profile():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    return render_template('profile.html' , user = user)
+
+
+@app.route('/resetpassword',methods = ['GET','POST'])
+def resetpassword():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    
+    form = ResetPassword()
+
+    if form.validate_on_submit():
+        print(user.password)
+        if user.password == form.password.data:
+            if user.password == form.new_password.data:
+                return "you can not reset the same password!"
+            user.password = form.new_password.data
+
+            db.session.commit()
+            return redirect(url_for('profile'))
+        return " password is wrong!"
+
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    return render_template('resetpassword.html',form = form , user = user)
+
+@app.route('/extra')
+def extra():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    
+    return render_template('extra.html' ,user = user)
 
 
 

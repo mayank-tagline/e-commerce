@@ -46,34 +46,62 @@
 
         <!-- MAIN -->
         <div class="main">
+            <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
 
+            {% if products %}
+            <div class="products">
+                {% for product in products %}
+                <div class="product-card">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
+
+                    <p><strong>Name:</strong> {{ product.product_name }}</p>
+                    <p><strong>Price:</strong> ${{ product.product_price }}</p>
+                    <p><strong>Details:</strong> {{ product.product_details }}</p>
+                    <p><strong>Category:</strong> {{ product.product_category }}</p>
+                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+
+                    <h3>
+                        <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
+                    </h3>
+
+                    <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form">
+                        <button type="submit">Delete your product</button>
+                    </form>
+
+                </div>
+                {% endfor %}
+            {% endif %}
+            </div>
         </div>
     </div>
-    
+
 
     <script>
         const homebtn = document.getElementById('sidebar-home')
-        homebtn.addEventListener('click', ()=> {
+        homebtn.addEventListener('click', () => {
             window.location.href = '/home';
         });
 
         const favoritebtn = document.getElementById('sidebar-favorite');
-        favoritebtn.addEventListener('click',()=> {
+        favoritebtn.addEventListener('click', () => {
             window.location.href = '/favorite';
         });
 
         const profilebtn = document.getElementById('sidebar-profile');
-        profilebtn.addEventListener('click',()=> {
+        profilebtn.addEventListener('click', () => {
             window.location.href = '/profile';
         })
-        
+
         const logoutbtn = document.getElementById('sidebar-logout');
-        logoutbtn.addEventListener('click', ()=> {
+        logoutbtn.addEventListener('click', () => {
             window.location.href = '/logout'
         })
-        
+
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        myproductbtn.addEventListener('click', ()=> {
+        myproductbtn.addEventListener('click', () => {
             window.location.href = '/myproduct'
         })
 

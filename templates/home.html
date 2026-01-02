@@ -19,9 +19,9 @@
         </div>
 
         <div class="right">
-            <div class="favorite">Favorite</div>
+            <div class="favorite"><a href="/favorite">Favorite</a></div>
             <div class="logout"><a href="/logout">Logout</a></div>
-            <div class="profile">Profile</div>
+            <div class="profile"><a href="/profile">Profile</a></div>
         </div>
     </div>
 
@@ -30,67 +30,24 @@
 
         <!-- SIDEBAR -->
         <div class="sidebar">
-            
+
             <div class="top">
-                <div class="home">Home</div>
-                <div class="favorite">Favorite</div>
-                <div class="profile">Profile</div>
+                <div class="home" id="sidebar-home">Home</div>
+                <div class="favorite" id="sidebar-favorite">Favorite</div>
+                <div class="profile" id="sidebar-profile">Profile</div>
                 {% if user.user_type == 's' %}
-                <div class="my_product">My Product</div>
+                <div class="my_product" id="sidebar-myproduct">My Product</div>
                 <div class="filter">Filter</div>
                 {% else %}
                 <div class="filter">Filter</div>
                 {% endif %}
             </div>
-            <div class="logout">Logout</div>
+            <div class="logout" id="sidebar-logout">Logout</div>
         </div>
 
         <!-- MAIN -->
         <div class="main">
             <h2>Products</h2>
-
-            {% if user %}
-            <p>user id is : {{ user.id }}</p>
-            <p>user name is : {{ user.username }}</p>
-            <p>user type is : {{ user.user_type }}</p>
-            <p>user password is : {{ user.password }}</p>
-            {% endif %}
-
-            {% if user.user_type == 's' %}
-            <p>user is seller</p>
-            <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
-
-            {% if products %}
-            <div class="products">
-                {% for product in products %}
-                <div class="product-card">
-
-                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
-
-                    <p><strong>Name:</strong> {{ product.product_name }}</p>
-                    <p><strong>Price:</strong> ${{ product.product_price }}</p>
-                    <p><strong>Details:</strong> {{ product.product_details }}</p>
-                    <p><strong>Category:</strong> {{ product.product_category }}</p>
-                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
-                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
-                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
-
-                    <h3>
-                        <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
-                    </h3>
-
-                    <form method="post"
-                          action="{{ url_for('delete', product_id=product.id) }}"
-                          class="delete-form">
-                        <button type="submit">Delete your product</button>
-                    </form>
-
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
-
-            {% else %}
 
             {% if products %}
             <div class="products">
@@ -117,7 +74,7 @@
             </div>
             {% endif %}
 
-            {% endif %}
+
 
         </div>
     </div>
@@ -134,7 +91,35 @@
                 });
             });
         });
+
+
+        const homebtn = document.getElementById('sidebar-home')
+        homebtn.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+
+        const favoritebtn = document.getElementById('sidebar-favorite');
+        favoritebtn.addEventListener('click', () => {
+            window.location.href = '/favorite';
+        });
+
+        const profilebtn = document.getElementById('sidebar-profile');
+        profilebtn.addEventListener('click', () => {
+            window.location.href = '/profile';
+        })
+
+        const logoutbtn = document.getElementById('sidebar-logout');
+        logoutbtn.addEventListener('click', () => {
+            window.location.href = '/logout'
+        })
+
+        const myproductbtn = document.getElementById('sidebar-myproduct');
+        myproductbtn.addEventListener('click', () => {
+            window.location.href = '/myproduct'
+        })
+
     </script>
 
 </body>
+
 </html>
