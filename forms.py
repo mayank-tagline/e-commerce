@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField ,SelectField
-from wtforms.validators import DataRequired , InputRequired , NumberRange
+from wtforms import StringField, PasswordField, SubmitField, IntegerField ,SelectField ,EmailField
+from wtforms.validators import DataRequired , InputRequired , NumberRange,Email
 from flask_wtf.file import FileField, FileRequired , FileAllowed
 
 
@@ -18,6 +18,7 @@ class RegisterForm(FlaskForm):
     )
             # selected_select_option = form.option_select.data
     username = StringField("Username", validators=[DataRequired()])
+    email = EmailField("E-mail",validators=[DataRequired(),Email()])
     password = PasswordField("Password", validators= [DataRequired()])
     submit = SubmitField("Register")
 
@@ -85,3 +86,23 @@ class ResetPassword(FlaskForm):
     password = PasswordField("Password", validators= [DataRequired()])
     new_password = PasswordField("New Password ", validators=[DataRequired()])
     submit = SubmitField("Reset Password")
+
+
+class UpdateUser(FlaskForm):
+    username = StringField("username ",validators= [DataRequired()])
+    email = EmailField("E-mail ", validators= [DataRequired(),Email()])
+    submit = SubmitField("update user")
+
+class ForgotPassword(FlaskForm):
+    email = EmailField("E-mail",validators=[DataRequired(),Email()])
+    submit = SubmitField("generate OTP ")
+
+
+class OtpPage(FlaskForm):
+    otp = StringField("OTP :",validators= [DataRequired()])
+    submit = SubmitField("verify OTP")
+
+
+class ChangePassword(FlaskForm):
+    password = StringField("New Password",validators=[DataRequired()])
+    submit = SubmitField("Change Password")

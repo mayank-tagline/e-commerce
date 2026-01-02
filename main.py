@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash ,session
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.utils import secure_filename
-from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword
+from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword, UpdateUser , ForgotPassword ,OtpPage , ChangePassword
+from flask_migrate import Migrate
 import os
 
 
@@ -19,6 +20,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+migrate = Migrate(app,db)
 
 class Product(db.Model):
     id=db.Column(db.Integer, primary_key = True)
@@ -37,7 +39,11 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     user_type = db.Column(db.String(20))
     username= db.Column(db.String(100), unique = True)
+    email = db.Column(db.String(100))
     password = db.Column(db.String(100))
+    __table_args__ = (
+        db.UniqueConstraint('email', name='uq_user_email'),
+    )
     
 
 class UserProduct(db.Model):
@@ -301,6 +307,65 @@ def resetpassword():
     user = User.query.filter_by(username= username).first()
     return render_template('resetpassword.html',form = form , user = user)
 
+@app.route('/updateuser', methods = ['GET','POST'])
+def updateuser():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    form = UpdateUser(obj=user)
+    users = User.query.all()
+
+    if form.validate_on_submit():
+
+        for u in users:
+            if u.email == form.email.data:
+                return "email already exist!"
+            
+        user.username = form.username.data
+        user.email = form.email.data
+        print(form.email.data)
+
+        db.session.commit()
+        return redirect(url_for('profile'))
+
+    return render_template('updateuser.html',user= user, form = form )
+
+@app.route('/forgotpassword',methods =['GET','POST'])
+def forgotpassword():
+    form = ForgotPassword()
+
+    if form.validate_on_submit():
+        def generateotp():
+            pass
+        def sendmail():
+            pass
+        return redirect(url_for('otppage'))
+    return render_template('forgotpassword.html', form = form)
+
+@app.route('/otppage',methods =['GET','POST'])
+def otppage():
+    form = OtpPage()
+    if form.validate_on_submit():
+        def validateotp():
+            pass
+        return redirect(url_for('changepassword'))
+
+    return render_template('otppage.html',form = form)
+
+
+@app.route('/changepassword',methods =['GET','POST'])
+def changepassword():
+    form = ChangePassword()
+    if form.validate_on_submit():
+        def savepassword():
+            pass
+        return redirect(url_for('login'))
+
+    return render_template('changepassword.html',form = form )
+        
+
 @app.route('/extra')
 def extra():
     if 'user' not in session:
@@ -314,8 +379,8 @@ def extra():
 
 
 if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
+    # with app.app_context():
+    #     db.create_all()
     app.run(debug=True)
 
 

@@ -51,11 +51,15 @@
             <p>user id is : {{ user.id }}</p>
             <p>user name is : {{ user.username }}</p>
             <p>user type is : {{ user.user_type }}</p>
+            <p>user email is : {{ user.email }}</p>
             <p>user password is : {{ user.password }}</p>
             {% endif %}
 
             <div>
-                <a href="resetpassword">Reset password</a>
+                <a href="/updateuser">update your details</a>
+            </div>
+            <div>
+                <a href="/resetpassword">Reset password</a>
             </div>
 
             
