@@ -4,6 +4,10 @@ from werkzeug.utils import secure_filename
 from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword, UpdateUser , ForgotPassword ,OtpPage , ChangePassword
 from flask_migrate import Migrate
 import os
+import random
+from flask_mail import Mail,Message
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -19,8 +23,19 @@ app.config['SECRET_KEY'] = 'tagline'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///data.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 465
+app.config['MAIL_USERNAME'] = os.getenv("MAIL_ID")
+app.config['MAIL_PASSWORD'] = os.getenv("MAIL_PASSWORD")
+app.config['MAIL_USE_SSL'] = True
+app.config['MAIL_USE_TLS'] = False
+
 db = SQLAlchemy(app)
 migrate = Migrate(app,db)
+
+mail = Mail(app)
+
+
 
 class Product(db.Model):
     id=db.Column(db.Integer, primary_key = True)
@@ -166,7 +181,7 @@ def addproduct(seller_id):
 @app.route('/logout')
 def logout():
     session.pop("user",None)
-    return redirect(url_for('home'))
+    return redirect(url_for('main'))
 
 
 @app.route('/buy/<product_id>')
@@ -321,6 +336,8 @@ def updateuser():
 
         for u in users:
             if u.email == form.email.data:
+                if form.email.data == user.email:
+                    break
                 return "email already exist!"
             
         user.username = form.username.data
@@ -328,6 +345,7 @@ def updateuser():
         print(form.email.data)
 
         db.session.commit()
+        session["user"] = user.username
         return redirect(url_for('profile'))
 
     return render_template('updateuser.html',user= user, form = form )
@@ -335,22 +353,40 @@ def updateuser():
 @app.route('/forgotpassword',methods =['GET','POST'])
 def forgotpassword():
     form = ForgotPassword()
+    otp = random.randint(100000,1000000)
+    # print(otp)
 
     if form.validate_on_submit():
-        def generateotp():
-            pass
-        def sendmail():
-            pass
+        
+        body = f"your otp is {otp}"
+        subject = "forgot password "
+        receiver= form.email.data
+        msg = Message(
+        subject=subject,
+        sender=app.config['MAIL_USERNAME'],
+        recipients=[receiver]
+        )
+        msg.body = body
+
+        mail.send(msg)
+        print(otp)
+
+        session['otp'] = otp
+        session['email']=receiver
+            
         return redirect(url_for('otppage'))
     return render_template('forgotpassword.html', form = form)
 
 @app.route('/otppage',methods =['GET','POST'])
 def otppage():
     form = OtpPage()
+    otp = session.get('otp')
+    print(otp)
     if form.validate_on_submit():
-        def validateotp():
-            pass
-        return redirect(url_for('changepassword'))
+        if otp == int(form.otp.data):
+            return redirect(url_for('changepassword'))
+        else :
+            return 'wrong otp'
 
     return render_template('otppage.html',form = form)
 
@@ -359,8 +395,13 @@ def otppage():
 def changepassword():
     form = ChangePassword()
     if form.validate_on_submit():
-        def savepassword():
-            pass
+        email = session.get('email')
+        user = User.query.filter_by(email = email).first()
+        # print(user)
+        # print(user.password)
+        user.password = form.password.data
+
+        db.session.commit()
         return redirect(url_for('login'))
 
     return render_template('changepassword.html',form = form )
