@@ -460,6 +460,52 @@ def like():
         return jsonify({'status': 'unliked'})
 
 
+@app.route('/liked-products')
+def liked_products():
+    username = session.get('user')
+    if not username:
+        return jsonify([])
+        # return redirect(url_for('login'))
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify([])
+
+    liked = UserProduct.query.filter_by(user_id=user.id).all()
+
+    liked_ids = [lp.product_id for lp in liked]
+    return jsonify(liked_ids)
+
+
+@app.route('/search')
+def search():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+
+    products = Product.query.all()
+
+
+    liked_products = [p.product_id for p in UserProduct.query.filter_by(user_id=user.id).all()]
+
+    product_list = []
+    for p in products:
+        product_list.append({
+            "id": p.id,
+            "name": p.product_name,
+            "price": p.product_price,
+            "image":p.product_image,
+            "details":p.product_details,
+            "category":p.product_category,
+            "gender":p.product_gender,
+            "stock":p.product_stock,
+            "sellerId":p.seller_id
+        })
+    
+    return render_template('search.html' ,user = user, products = products, products_json = product_list, liked_products = liked_products)
+
 @app.route('/extra')
 def extra():
     if 'user' not in session:

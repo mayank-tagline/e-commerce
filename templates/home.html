@@ -14,7 +14,7 @@
     <div class="header">
         <div class="logo">My Shop</div>
 
-        <div class="searchbar">
+        <div class="searchbar"  id="searchbar">
             <input type="text" placeholder="Search products..." />
         </div>
 
@@ -118,8 +118,15 @@
         })
 
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        myproductbtn.addEventListener('click', () => {
-            window.location.href = '/myproduct'
+        if(myproductbtn){
+            myproductbtn.addEventListener('click', () => {
+                window.location.href = '/myproduct'
+            })
+        }
+
+        const searchbar = document.getElementById('searchbar');
+        searchbar.addEventListener('click', ()=> {
+            window.location.href = '/search'
         })
 
     </script>

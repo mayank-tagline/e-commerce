@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">My Shop</div>
+
+        <div class="searchbar" id="searchbar">
+            <input type="text" id="search" placeholder="Search products..." />
+        </div>
+
+        <div class="right">
+            <div class="favorite"><a href="/favorite">Favorite</a></div>
+            <div class="logout"><a href="/logout">Logout</a></div>
+            <div class="profile"><a href="/profile">Profile</a></div>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+
+            <div class="top">
+                <div class="home" id="sidebar-home">Home</div>
+                <!-- <div class="home" ><button onsubmit="return ">Home</button></div> -->
+                <div class="favorite" id="sidebar-favorite">Favorite</div>
+                <div class="profile" id="sidebar-profile">Profile</div>
+                {% if user.user_type == 's' %}
+                <div class="my_product" id="sidebar-myproduct">My Product</div>
+                {% endif %}
+                <div class="filter">Filter</div>
+            </div>
+            <div class="logout" id="sidebar-logout">Logout</div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            <h1>search your product</h1>
+            <div class="products" id="products">
+
+            </div>
+
+        </div>
+    </div>
+    
+
+    <script>
+        const homebtn = document.getElementById('sidebar-home')
+        homebtn.addEventListener('click', ()=> {
+            window.location.href = '/home';
+        });
+
+        const favoritebtn = document.getElementById('sidebar-favorite');
+        favoritebtn.addEventListener('click',()=> {
+            window.location.href = '/favorite';
+        });
+
+        const profilebtn = document.getElementById('sidebar-profile');
+        profilebtn.addEventListener('click',()=> {
+            window.location.href = '/profile';
+        })
+        
+        const logoutbtn = document.getElementById('sidebar-logout');
+        logoutbtn.addEventListener('click', ()=> {
+            window.location.href = '/logout'
+        })
+        
+        const myproductbtn = document.getElementById('sidebar-myproduct');
+        if(myproductbtn){
+            myproductbtn.addEventListener('click', () => {
+                window.location.href = '/myproduct'
+            })
+        }
+
+        
+        
+        
+        </script>
+
+</body>
+
+
+<script id="products-data" type="application/json">
+    {{ products_json | tojson }}
+</script>
+
+
+<!-- <script>
+    let likedProducts = [];
+</script> -->
+
+<script id="likes-data" type="application/json">
+    {{ liked_products | tojson }}
+</script>
+
+
+<script>
+fetch('/liked-products')
+    .then(res => res.json())
+    .then(data => {
+        likedProducts = data;
+        console.log('Liked products:', likedProducts);
+    });
+</script>
+
+<script>
+
+    const products = JSON.parse(
+        document.getElementById('products-data').textContent
+    );
+
+    let likedProducts = JSON.parse(
+        document.getElementById('likes-data').textContent
+    );
+    productdata = products;
+    const product_container = document.getElementById('products')
+    const search = document.getElementById('search');
+
+
+    // for the first time
+    product_container.innerHTML = '';
+
+    productdata.forEach(p => {
+        const isChecked = likedProducts.includes(p.id) ? 'checked' : '';
+        product_container.innerHTML += `
+            <div class="product-card">
+            
+
+            <img src="/static/uploads/${p.image}">
+
+            <p><strong>Name:</strong> ${ p.name }</p>
+            <p><strong>Price:</strong> ₹${ p.price }</p>
+            <p><strong>Details:</strong> ${ p.details }</p>
+            <p><strong>Category:</strong> ${ p.category }</p>
+            <p><strong>Gender:</strong> ${ p.gender }</p>
+            <p><strong>Stock:</strong> ${ p.stock }</p>
+            <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
+            <p><strong>Product ID:</strong> ${ p.id }</p>
+            <input type="checkbox" class="like-checkbox" data-product-id="${ p.id }" ${isChecked}>
+
+            <div class="buybutton">
+                <a href="/buy/${p.id}">buy</a>
+            </div>
+
+        </div>
+        `
+    });
+
+
+
+    // when search or input is change
+    search.addEventListener('keyup', ()=> {
+        const searchText = search.value.toLowerCase();
+        if(!searchText){
+            productdata = products;
+        }else{
+            productdata = products.filter(product => product.name.toLowerCase().trim().includes(searchText) )
+        }
+
+        product_container.innerHTML = '';
+
+        productdata.forEach(p => {
+            const isChecked = likedProducts.includes(p.id) ? 'checked' : '';
+            product_container.innerHTML += `
+                <div class="product-card">
+                
+                <img src="/static/uploads/${p.image}">
+
+                <p><strong>Name:</strong> ${ p.name }</p>
+                <p><strong>Price:</strong> ₹${ p.price }</p>
+                <p><strong>Details:</strong> ${ p.details }</p>
+                <p><strong>Category:</strong> ${ p.category }</p>
+                <p><strong>Gender:</strong> ${ p.gender }</p>
+                <p><strong>Stock:</strong> ${ p.stock }</p>
+                <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
+                <p><strong>Product ID:</strong> ${ p.id }</p>
+                <input type="checkbox" class="like-checkbox" data-product-id="${ p.id }" ${isChecked}>
+
+                <div class="buybutton">
+                    <a href="/buy/${p.id}">buy</a>
+                </div>
+
+            </div>
+            `
+        });
+    })
+</script>
+<script>
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('like-checkbox')) {
+        const productId = parseInt(e.target.dataset.productId);
+        const liked = e.target.checked;
+
+        fetch('/like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                liked: liked
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            // refresh liked products from DB
+            return fetch('/liked-products');
+        })
+        .then(res => res.json())
+        .then(data => {
+            likedProducts = data;
+            console.log('Updated liked:', likedProducts);
+        });
+    }
+});
+</script>
+
+
+</html>
