@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash ,session
+from flask import Flask, render_template, request, redirect, url_for, flash ,session , jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.utils import secure_filename
 from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword, UpdateUser , ForgotPassword ,OtpPage , ChangePassword
@@ -67,6 +67,10 @@ class UserProduct(db.Model):
     user_id= db.Column (db.Integer, db.ForeignKey('user.id'))
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
 
+    __table_args__ = (
+        db.UniqueConstraint('user_id', 'product_id',name='uq_user_product'),
+    )
+
 
 
 
@@ -91,16 +95,22 @@ def home():
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
+    products = Product.query.all()
 
-    seller_id = user.id
+    liked_products=[]
+    liked_products = [
+        up.product_id for up in UserProduct.query.filter_by(user_id = user.id).all()
+    ]
+    
+
+   
 
     # if user.user_type == 's':
     #     products = Product.query.filter_by(seller_id =seller_id).all()
     #     return render_template("home.html",user = user , products = products)
     
     # else:
-    products = Product.query.all()
-    return render_template("home.html", user = user , products = products)
+    return render_template("home.html", user = user , products = products , liked_products = liked_products)
        
 
 
@@ -277,14 +287,22 @@ def myproduct():
     return render_template('myproduct.html' , user = user,products = products)
 
 
-@app.route('/favorite')
+@app.route('/favorite',methods=['POST','GET'])
 def favorite():
     if 'user' not in session:
         return redirect(url_for('login'))
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
-    return render_template('favorite.html', user = user)
+    
+
+    products = (db.session.query(Product).join(UserProduct, Product.id == UserProduct.product_id).filter(UserProduct.user_id == user.id).all())
+
+    liked_products = [ up.product_id for up in UserProduct.query.filter_by(user_id=user.id).all()]
+
+
+
+    return render_template('favorite.html', user = user , products = products , liked_products = liked_products)
 
 @app.route('/profile')
 def profile():
@@ -406,6 +424,41 @@ def changepassword():
 
     return render_template('changepassword.html',form = form )
         
+
+
+@app.route('/like', methods=['POST'])
+def like():
+    data = request.get_json()
+
+    username = session.get('user')
+    user = User.query.filter_by(username = username).first()
+    user_id = user.id
+
+    product_id = data['product_id']
+    liked = data['liked']
+
+    record = UserProduct.query.filter_by(
+        user_id=user_id,
+        product_id=product_id
+    ).first()
+
+    if liked:
+        if record:
+            return jsonify({'status': 'already liked'})
+
+        db.session.add(UserProduct(
+            user_id=user_id,
+            product_id=product_id
+        ))
+        db.session.commit()
+        return jsonify({'status': 'liked'})
+
+    else:
+        if record:
+            db.session.delete(record)
+            db.session.commit()
+        return jsonify({'status': 'unliked'})
+
 
 @app.route('/extra')
 def extra():

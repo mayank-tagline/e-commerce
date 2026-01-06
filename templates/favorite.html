@@ -47,38 +47,87 @@
         <!-- MAIN -->
         <div class="main">
             <h1>This is favorite page.</h1>
+
+
+            {% if products %}
+            <div class="products">
+                {% for product in products %}
+                <div class="product-card">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
+
+                    <p><strong>Name:</strong> {{ product.product_name }}</p>
+                    <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
+                    <p><strong>Details:</strong> {{ product.product_details }}</p>
+                    <p><strong>Category:</strong> {{ product.product_category }}</p>
+                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+                    <p><strong>Product ID:</strong> {{ product.id }}</p>
+                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" {% if product.id in
+                        liked_products %} checked {% endif %}>
+
+                    <div class="buybutton">
+                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
-    
+
 
     <script>
         const homebtn = document.getElementById('sidebar-home')
-        homebtn.addEventListener('click', ()=> {
+        homebtn.addEventListener('click', () => {
             window.location.href = '/home';
         });
 
         const favoritebtn = document.getElementById('sidebar-favorite');
-        favoritebtn.addEventListener('click',()=> {
+        favoritebtn.addEventListener('click', () => {
             window.location.href = '/favorite';
         });
 
         const profilebtn = document.getElementById('sidebar-profile');
-        profilebtn.addEventListener('click',()=> {
+        profilebtn.addEventListener('click', () => {
             window.location.href = '/profile';
         })
-        
+
         const logoutbtn = document.getElementById('sidebar-logout');
-        logoutbtn.addEventListener('click', ()=> {
+        logoutbtn.addEventListener('click', () => {
             window.location.href = '/logout'
         })
 
 
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        myproductbtn.addEventListener('click', ()=> {
+        myproductbtn.addEventListener('click', () => {
             window.location.href = '/myproduct'
         })
     </script>
 
 </body>
+
+<script>
+    document.querySelectorAll('.like-checkbox').forEach(box => {
+        box.addEventListener('change', function () {
+            fetch('/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_id: this.dataset.productId,
+                    liked: this.checked
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.status);
+                });
+
+        });
+    });
+
+</script>
 
 </html>
