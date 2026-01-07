@@ -280,7 +280,22 @@ def myproduct():
     seller_id = user.id
 
 
-    products = Product.query.filter_by(seller_id =seller_id).all()
+    query = Product.query.filter_by(seller_id = seller_id)
+    # products = Product.query.filter_by(seller_id =seller_id).all()
+    category = request.args.get('category')
+    gender = request.args.get('gender')
+    price = request.args.get('price')
+
+    if category:
+        query = query.filter(Product.product_category.in_(category.split(',')))
+
+    if gender:
+        query = query.filter(Product.product_gender.in_(gender.split(',')))
+
+    if price:
+        query = query.filter(Product.product_price <= int(price))
+
+    products = query.all()
 
     product_list = []
     for p in products:

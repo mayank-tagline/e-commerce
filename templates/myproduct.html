@@ -39,7 +39,27 @@
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
-                <div class="filter">Filter</div>
+                <div class="filter" id="sidebar-filter">Filter</div>
+
+                <div class="filter-dropdown" id="filter-dropdown">
+                    <h4>Category</h4>
+                    <label><input type="checkbox" value="shirt"> Shirt</label><br>
+                    <label><input type="checkbox" value="pant"> Pant</label><br>
+                    <label><input type="checkbox" value="shoes"> Shoes</label>
+
+                    <h4>Gender</h4>
+                    <label><input type="checkbox" value="men"> Men</label><br>
+                    <label><input type="checkbox" value="women"> Women</label><br>
+                    <label><input type="checkbox" value="kids"> Kid</label>
+
+                    <h4>Price</h4>
+                    <input type="range" min="0" max="5000" step="100" id="priceRange">
+                    <p>Max Price: ₹<span id="priceValue">5000</span></p>
+
+                    <button id="apply-filter">Apply Filter</button>
+
+                </div>
+
             </div>
             <div class="logout" id="sidebar-logout">Logout</div>
         </div>
@@ -47,7 +67,7 @@
         <!-- MAIN -->
         <div class="main">
             <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
-
+                    
             {% if products %}
             <div class="products" id="products">
                 {% for product in products %}
@@ -73,8 +93,12 @@
 
                 </div>
                 {% endfor %}
-            {% endif %}
             </div>
+            {% else  %}
+            <div class="notfound">
+                <h1>this products are currently not available</h1>
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -162,5 +186,50 @@
 
 
 </script>
+
+<script>
+    const filterBtn = document.getElementById('sidebar-filter');
+    const filterDropdown = document.getElementById('filter-dropdown');
+
+    filterBtn.addEventListener('click', () => {
+        if (filterDropdown.style.display === 'none' || filterDropdown.style.display === '') {
+            filterDropdown.style.display = 'block';
+        } else {
+            filterDropdown.style.display = 'none';
+        }
+    });
+
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    priceRange.addEventListener('input', () => {
+        priceValue.innerText = priceRange.value;
+    });
+</script>
+
+<script>
+    document.getElementById('apply-filter').addEventListener('click', () => {
+
+        const categories = Array.from(
+            document.querySelectorAll('input[value="shirt"], input[value="pant"], input[value="shoes"]')
+        ).filter(cb => cb.checked).map(cb => cb.value);
+
+        const genders = Array.from(
+            document.querySelectorAll('input[value="men"], input[value="women"], input[value="kids"]')
+        ).filter(cb => cb.checked).map(cb => cb.value);
+
+        const maxPrice = document.getElementById('priceRange').value;
+
+        const params = new URLSearchParams({
+            category: categories.join(','),
+            gender: genders.join(','),
+            price: maxPrice
+        });
+
+        window.location.href = `/myproduct?${params.toString()}`;
+    });
+</script>
+
+
 
 </html>

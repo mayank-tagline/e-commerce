@@ -93,6 +93,27 @@
 
 </body>
 
+<script>
+    document.querySelectorAll('.like-checkbox').forEach(box => {
+        box.addEventListener('change', function () {
+            fetch('/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_id: this.dataset.productId,
+                    liked: this.checked
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.status);
+                });
+
+        });
+    });
+
+</script>
+
 
 <script id="products-data" type="application/json">
     {{ products_json | tojson }}
