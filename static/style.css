@@ -162,3 +162,17 @@
 .delete-form button {
     background-color: #ff4d4d;
 }
+
+
+.filter-dropdown {
+    display: none;
+    background: #f5f5f5;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.filter-dropdown h4 {
+    margin: 8px 0 4px;
+}

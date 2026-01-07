@@ -39,7 +39,7 @@
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
-                <div class="filter">Filter</div>
+                <div class="filter" id="sidebar-filter">Filter</div>
             </div>
             <div class="logout" id="sidebar-logout">Logout</div>
         </div>
@@ -100,6 +100,11 @@
         const searchbar = document.getElementById('searchbar');
         searchbar.addEventListener('click', ()=> {
             window.location.href = '/search'
+        })
+
+        const filter = document.getElementById('sidebar-filter');
+        filter.addEventListener('click',()=>{
+            window.location.href = '/filter'
         })
 
     </script>

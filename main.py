@@ -520,15 +520,49 @@ def search():
     
     return render_template('search.html' ,user = user, products = products, products_json = product_list, liked_products = liked_products)
 
+@app.route('/filter')
+def filter():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+
+    username = session.get('user')
+    user = User.query.filter_by(username=username).first()
+
+    category = request.args.get('category')
+    gender = request.args.get('gender')
+    price = request.args.get('price')
+
+    query = Product.query
+
+    if category:
+        query = query.filter(Product.product_category.in_(category.split(',')))
+
+    if gender:
+        query = query.filter(Product.product_gender.in_(gender.split(',')))
+
+    if price:
+        query = query.filter(Product.product_price <= int(price))
+
+    products = query.all()
+    # print(products)
+    # print(products[0].product_name)
+
+    liked_products = [
+        up.product_id
+        for up in UserProduct.query.filter_by(user_id=user.id).all()
+    ]
+
+    return render_template('filter.html', user=user, products=products , liked_products= liked_products)
+
 @app.route('/extra')
 def extra():
     if 'user' not in session:
         return redirect(url_for('login'))
     
     username = session.get('user')
-    user = User.query.filter_by(username= username).first()
+    user = User.query.filter_by(username=username).first()
     
-    return render_template('extra.html' ,user = user)
+    return render_template('extra.html', user=user)
 
 
 
