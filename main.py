@@ -183,7 +183,7 @@ def addproduct(seller_id):
         )
         db.session.add(product)
         db.session.commit()
-        return redirect(url_for('home'))
+        return redirect(url_for('myproduct'))
 
     return render_template ('addProduct.html', form = form)
 
@@ -282,9 +282,23 @@ def myproduct():
 
     products = Product.query.filter_by(seller_id =seller_id).all()
 
+    product_list = []
+    for p in products:
+        product_list.append({
+            "id": p.id,
+            "name": p.product_name,
+            "price": p.product_price,
+            "image":p.product_image,
+            "details":p.product_details,
+            "category":p.product_category,
+            "gender":p.product_gender,
+            "stock":p.product_stock,
+            "sellerId":p.seller_id
+        })
+
 
     
-    return render_template('myproduct.html' , user = user,products = products)
+    return render_template('myproduct.html' , user = user,products = products,products_json = product_list)
 
 
 @app.route('/favorite',methods=['POST','GET'])

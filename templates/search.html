@@ -161,7 +161,7 @@ fetch('/liked-products')
 
     // when search or input is change
     search.addEventListener('keyup', ()=> {
-        const searchText = search.value.toLowerCase();
+        const searchText = search.value.toLowerCase().trim();
         if(!searchText){
             productdata = products;
         }else{

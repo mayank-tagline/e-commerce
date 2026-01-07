@@ -14,8 +14,8 @@
     <div class="header">
         <div class="logo">My Shop</div>
 
-        <div class="searchbar">
-            <input type="text" placeholder="Search products..." />
+        <div class="searchbar" id="searchbar">
+            <input type="text" id="search" placeholder="Search products..." />
         </div>
 
         <div class="right">
@@ -49,7 +49,7 @@
             <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
 
             {% if products %}
-            <div class="products">
+            <div class="products" id="products">
                 {% for product in products %}
                 <div class="product-card">
 
@@ -108,5 +108,59 @@
     </script>
 
 </body>
+
+<script id="products-data" type="application/json">
+    {{ products_json | tojson }}
+</script>
+
+<script>
+    const products = JSON.parse(
+    document.getElementById('products-data').textContent
+    );
+
+    search = document.getElementById('search')
+    searchbar = document.getElementById('searchbar')
+    const product_container = document.getElementById('products')
+
+    let productData = products
+    
+    search.addEventListener('keyup', () => {
+        const searchText = search.value.toLowerCase().trim();
+        if(!searchText){
+            productData = products
+        }else{
+            productData = products.filter(product => product.name.toLowerCase().trim().includes(searchText) )
+        }
+        product_container.innerHTML = '';
+
+        productData.forEach(p => {
+            product_container.innerHTML += `
+                <div class="product-card">
+
+                    <img src="/static/uploads/${p.image}">
+
+                    <p><strong>Name:</strong> ${ p.name }</p>
+                    <p><strong>Price:</strong> ₹${ p.price }</p>
+                    <p><strong>Details:</strong> ${ p.details }</p>
+                    <p><strong>Category:</strong> ${ p.category }</p>
+                    <p><strong>Gender:</strong> ${ p.gender }</p>
+                    <p><strong>Stock:</strong> ${ p.stock }</p>
+                    <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
+
+                    <h3>
+                        <a href="/update/${p.id}">update your product</a>
+                    </h3>
+
+                    <form method="post" action="/delete/${p.id}" class="delete-form">
+                        <button type="submit">Delete your product</button>
+                    </form>
+
+                </div>
+            `
+        });
+    })
+
+
+</script>
 
 </html>
