@@ -1,11 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>guest page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <h2><a href="/login">login</a></h2>
+
+<body id="body">
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">My Shop</div>
+
+        <div class="searchbar" id="searchbar">
+            <input type="text" placeholder="Search products..." />
+        </div>
+
+        <div class="right">
+            <div class="favorite"><a >Favorite</a></div>
+            <div class="profile"><a >Profile</a></div>
+        </div>
+    </div>
+
+    <div class="layout">
+
+        <div class="sidebar">
+
+            <div class="top">
+                <div class="home" id="sidebar-home">Home</div>
+                <div class="favorite" id="sidebar-favorite">Favorite</div>
+                <div class="profile" id="sidebar-profile">Profile</div>
+
+                <div class="filter" id="sidebar-filter">Filter</div>
+
+            </div>
+        <div class="logout" id="sidebar-logout">login</div>
+
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+            {% if products %}
+            <div class="products">
+                {% for product in products %}
+                <div class="product-card">
+
+                    <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
+
+                    <p><strong>Name:</strong> {{ product.product_name }}</p>
+                    <p><strong>Price:</strong> ₹{{ product.product_price }}</p>
+                    <p><strong>Details:</strong> {{ product.product_details }}</p>
+                    <p><strong>Category:</strong> {{ product.product_category }}</p>
+                    <p><strong>Gender:</strong> {{ product.product_gender }}</p>
+                    <p><strong>Stock:</strong> {{ product.product_stock }}</p>
+                    <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+                    <p><strong>Product ID:</strong> {{ product.id }}</p>
+                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" 
+                    {% if product.id in liked_products %}
+                        checked 
+                    {% endif %}>
+
+                    <div class="buybutton">
+                        <a >buy</a>
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+
+
+    <script>
+        const body = document.getElementById('body')
+        body.addEventListener('click',function(){
+            window.location.href='/login';
+        })
+
+    </script>
+
 </body>
 </html>

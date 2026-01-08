@@ -85,7 +85,10 @@ def main():
     # username = session.get('user')
     # user = User.query.filter_by(username= username).first()
 
-    return render_template("main.html" )
+    products = Product.query.order_by(Product.id.desc()).all()
+
+
+    return render_template("main.html", products = products )
 
 
 @app.route('/home')
