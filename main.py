@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash ,session , jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash ,session , jsonify ,abort
 from flask_sqlalchemy import SQLAlchemy 
 from werkzeug.utils import secure_filename
 from forms import LoginForm ,RegisterForm ,AddProduct,UpdateProduct,ResetPassword, UpdateUser , ForgotPassword ,OtpPage , ChangePassword
@@ -160,6 +160,12 @@ def register():
 
 @app.route('/addproduct/<seller_id>', methods = ['GET', 'POST'])
 def addproduct(seller_id):
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if user.user_type !='s':
+        abort(404),404
     form = AddProduct()
     form.product_seller_id.data = seller_id
     if form.validate_on_submit():
@@ -199,22 +205,36 @@ def logout():
 
 @app.route('/buy/<product_id>')
 def buyButton(product_id):
+    if 'user' not in session:
+        return redirect(url_for('login'))
     product = Product.query.filter_by(id = product_id).first()
     return render_template('buy.html', product = product)
 
 
-@app.route('/payment')
-def payment():
-    return render_template('payment.html')
+@app.route('/payment/<int:product_price>')
+def payment(product_price):
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return render_template('payment.html',product_price = product_price)
 
 @app.route('/success')
 def success():
+    if 'user' not in session:
+        return redirect(url_for('login'))
     return render_template('success.html')
 
 
 
 @app.route('/update/<int:product_id>', methods=['GET', 'POST'])
 def update(product_id):
+
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if user.user_type !='s':
+        abort(404),404
+
     product = Product.query.get_or_404(product_id)
     form = UpdateProduct()
 
@@ -262,13 +282,29 @@ def cancel():
 
 @app.route('/delete/<int:product_id>',methods = ['POST','GET'])
 def delete(product_id):
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    if 'user' not in session:
+        return redirect(url_for('login'))
     product = Product.query.get_or_404(product_id)
+    # if user.user_type !='s' and user.id != product.seller_id :
+    #     return "something wrong!"
+    # elif product :
+    #     db.session.delete(product)
+    #     db.session.commit()
+    # else:
+    #     return "yo!"
 
-    if product :
-        db.session.delete(product)
-        db.session.commit()
+    if user.user_type =='s' and user.id == product.seller_id :
+        if product :
+            db.session.delete(product)
+            db.session.commit()
+        else:
+            return "product not found"
+    else:
+        abort(404),404
 
-    return redirect(url_for('home'))
+    return redirect(url_for('myproduct'))
 
 
 
@@ -279,6 +315,8 @@ def myproduct():
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
+    if user.user_type !='s':
+        abort(404),404
 
     seller_id = user.id
 
@@ -433,6 +471,8 @@ def forgotpassword():
 def otppage():
     form = OtpPage()
     otp = session.get('otp')
+    if not otp:
+        abort(404)
     print(otp)
     if form.validate_on_submit():
         if otp == int(form.otp.data):
@@ -446,11 +486,16 @@ def otppage():
 @app.route('/changepassword',methods =['GET','POST'])
 def changepassword():
     form = ChangePassword()
+    email = session.get('email')
+    if not email:
+        abort(404),404
     if form.validate_on_submit():
-        email = session.get('email')
+
         user = User.query.filter_by(email = email).first()
         # print(user)
         # print(user.password)
+        if not user :
+            return "wrong email!"
         user.password = form.password.data
 
         db.session.commit()
@@ -586,6 +631,11 @@ def extra():
     
     return render_template('extra.html', user=user)
 
+
+
+@app.errorhandler(404)
+def not_found_error(error):
+    return render_template("404.html"),404
 
 
 if __name__ == "__main__":

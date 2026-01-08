@@ -54,9 +54,10 @@
 
                     <h4>Price</h4>
                     <input type="range" min="0" max="5000" step="100" id="priceRange">
-                    <p>Max Price: ₹<span id="priceValue">5000</span></p>
+                    <p>Max Price: ₹<span id="priceValue">2500</span></p>
 
                     <button id="apply-filter">Apply Filter</button>
+                    <a href="/filter">reset</a>
 
                 </div>
 
@@ -66,8 +67,12 @@
 
         <!-- MAIN -->
         <div class="main">
-            <a href="{{ url_for('addproduct', seller_id=user.id) }}">add your product</a>
-                    
+            <div class="add-product-box">
+                <a href="{{ url_for('addproduct', seller_id=user.id) }}">
+                    Add Your Product
+                </a>
+            </div>
+
             {% if products %}
             <div class="products" id="products">
                 {% for product in products %}
@@ -88,14 +93,15 @@
                         <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
                     </h3>
 
-                    <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form">
+                    <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form"
+                        onsubmit="return confirm('Are you sure, You want to delete this Product?');">
                         <button type="submit">Delete your product</button>
                     </form>
 
                 </div>
                 {% endfor %}
             </div>
-            {% else  %}
+            {% else %}
             <div class="notfound">
                 <h1>this products are currently not available</h1>
             </div>
@@ -140,7 +146,7 @@
 
 <script>
     const products = JSON.parse(
-    document.getElementById('products-data').textContent
+        document.getElementById('products-data').textContent
     );
 
     search = document.getElementById('search')
@@ -148,13 +154,13 @@
     const product_container = document.getElementById('products')
 
     let productData = products
-    
+
     search.addEventListener('keyup', () => {
         const searchText = search.value.toLowerCase().trim();
-        if(!searchText){
+        if (!searchText) {
             productData = products
-        }else{
-            productData = products.filter(product => product.name.toLowerCase().trim().includes(searchText) )
+        } else {
+            productData = products.filter(product => product.name.toLowerCase().trim().includes(searchText))
         }
         product_container.innerHTML = '';
 
@@ -164,20 +170,20 @@
 
                     <img src="/static/uploads/${p.image}">
 
-                    <p><strong>Name:</strong> ${ p.name }</p>
-                    <p><strong>Price:</strong> ₹${ p.price }</p>
-                    <p><strong>Details:</strong> ${ p.details }</p>
-                    <p><strong>Category:</strong> ${ p.category }</p>
-                    <p><strong>Gender:</strong> ${ p.gender }</p>
-                    <p><strong>Stock:</strong> ${ p.stock }</p>
-                    <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
-                    <p><strong>Product ID:</strong> ${ p.id }</p>
+                    <p><strong>Name:</strong> ${p.name}</p>
+                    <p><strong>Price:</strong> ₹${p.price}</p>
+                    <p><strong>Details:</strong> ${p.details}</p>
+                    <p><strong>Category:</strong> ${p.category}</p>
+                    <p><strong>Gender:</strong> ${p.gender}</p>
+                    <p><strong>Stock:</strong> ${p.stock}</p>
+                    <p><strong>Seller ID:</strong> ${p.sellerId}</p>
+                    <p><strong>Product ID:</strong> ${p.id}</p>
 
                     <h3>
                         <a href="/update/${p.id}">update your product</a>
                     </h3>
 
-                    <form method="post" action="/delete/${p.id}" class="delete-form">
+                    <form method="post" action="/delete/${p.id}" class="delete-form" onsubmit="return confirm('Are you sure, You want to delete this Product?');">
                         <button type="submit">Delete your product</button>
                     </form>
 

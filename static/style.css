@@ -176,3 +176,16 @@
 .filter-dropdown h4 {
     margin: 8px 0 4px;
 }
+
+
+
+.add-product-box a {
+    text-decoration: none;
+    background-color: #2563eb;  /* blue */
+    color: white;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
