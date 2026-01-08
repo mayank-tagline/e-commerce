@@ -82,6 +82,7 @@
                     <p><strong>Gender:</strong> {{ product.product_gender }}</p>
                     <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                     <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
+                    <p><strong>Product ID:</strong> {{ product.id }}</p>
 
                     <h3>
                         <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
@@ -170,6 +171,7 @@
                     <p><strong>Gender:</strong> ${ p.gender }</p>
                     <p><strong>Stock:</strong> ${ p.stock }</p>
                     <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
+                    <p><strong>Product ID:</strong> ${ p.id }</p>
 
                     <h3>
                         <a href="/update/${p.id}">update your product</a>

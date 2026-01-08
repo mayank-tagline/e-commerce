@@ -95,7 +95,7 @@ def home():
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
-    products = Product.query.all()
+    products = Product.query.order_by(Product.id.desc()).all()
 
     liked_products=[]
     liked_products = [
@@ -295,7 +295,7 @@ def myproduct():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    products = query.all()
+    products = query.order_by(Product.id.desc()).all()
 
     product_list = []
     for p in products:
@@ -325,7 +325,9 @@ def favorite():
     user = User.query.filter_by(username= username).first()
     
 
-    products = (db.session.query(Product).join(UserProduct, Product.id == UserProduct.product_id).filter(UserProduct.user_id == user.id).all())
+    query = (db.session.query(Product).join(UserProduct, Product.id == UserProduct.product_id).filter(UserProduct.user_id == user.id))
+
+    products = query.order_by(Product.id.desc()).all()
 
     liked_products = [ up.product_id for up in UserProduct.query.filter_by(user_id=user.id).all()]
 
@@ -514,7 +516,8 @@ def search():
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
 
-    products = Product.query.all()
+    query = Product.query
+    products = query.order_by(Product.id.desc()).all()
 
 
     liked_products = [p.product_id for p in UserProduct.query.filter_by(user_id=user.id).all()]
@@ -558,7 +561,8 @@ def filter():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    products = query.all()
+    # product = query
+    products = query.order_by(Product.id.desc()).all()
     # print(products)
     # print(products[0].product_name)
 
