@@ -149,6 +149,7 @@ def register():
         user = User(
             user_type = form.user_type.data,
             username = form.username.data,
+            email = form.email.data,
             password = form.password.data
         )
 
