@@ -70,19 +70,33 @@ e-commerce/
 │   ├── uploads/
 │   └── style.css
 ├── templates/
+│   ├── 404.html
+│   ├── addProduct.html
+│   ├── buy.html
+│   ├── changepassword.html
+│   ├── extra.html
+│   ├── favorite.html
+│   ├── filter.html
+│   ├── forgotpassword.html
 │   ├── home.html
 │   ├── login.html
-│   ├── register.html
-│   ├── filter.html
-│   ├── search.html
-│   ├── favorite.html
+│   ├── main.html
 │   ├── myproduct.html
+│   ├── otppage.html
+│   ├── payment.html
 │   └── profile.html
+│   ├── register.html
+│   ├── resetpassword.html
+│   ├── search.html
+│   ├── success.html
+│   ├── update.html
+│   ├── updateuser.html
+├── .env
+├── data.db
 ├── forms.py
 ├── main.py
-├── requirement.txt
-├── .env
-└── README.md
+├── README.md
+└── requirement.txt
 
 ```
 
@@ -91,10 +105,10 @@ e-commerce/
 
 ### User
 - id
+- user_type (buyer / seller)
 - username
 - email
 - password
-- user_type (buyer / seller)
 
 ### Product
 - id
@@ -108,6 +122,7 @@ e-commerce/
 - seller_id (ForeignKey → User)
 
 ### UserProduct (Favorites)
+- id
 - user_id
 - product_id
 
