@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>register user</title>
 </head>
+
 <body>
     <h2>User Registration</h2>
 
-    <form  method="post">
-        {{  form.hidden_tag()  }}
 
-        {{  form.user_type.label  }} <br>
-        {{  form.user_type  }} <br> <br>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
-        {{  form.username.label  }} <br>
-        {{  form.username  }} <br> <br>
+    <form method="post">
+        {{ form.hidden_tag() }}
 
-        {{  form.email.label  }} <br>
-        {{  form.email  }} <br> <br>
+        {{ form.user_type.label }} <br>
+        {{ form.user_type }} <br> <br>
 
-        {{  form.password.label  }} <br>
-        {{  form.password  }} <br> <br>
+        {{ form.username.label }} <br>
+        {{ form.username }} <br> <br>
+
+        {{ form.email.label }} <br>
+        {{ form.email }} <br> <br>
+
+        {{ form.password.label }} <br>
+        {{ form.password }} <br> <br>
 
         {{ form.submit}} <br>
     </form>
 </body>
+
 </html>
