@@ -171,6 +171,12 @@ MAIL_PASSWORD=your_email_app_password
 ⚠️ .env is ignored by Git for security reasons.
 
 
+## `export FLASK_APP` 
+## this step is compulsary 
+
+```bash
+export FLASK_APP=main.py
+```
 
 
 ## 🗄️ Database Migration
