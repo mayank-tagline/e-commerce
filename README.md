@@ -84,7 +84,7 @@ e-commerce/
 ├── .env
 └── README.md
 
-
+```
 
 
 ## 🧱 Database Models
@@ -134,7 +134,7 @@ e-commerce/
 ```bash
 git clone https://github.com/mayank-tagline/e-commerce.git
 cd e-commerce
-
+```
 
 ## 2️⃣ Create & Activate Virtual Environment
 
@@ -159,7 +159,7 @@ pip install -r requirement.txt
 ```
 
 
-## 🔐 Environment Variables (.env)
+ 🔐 Environment Variables (.env)
 
 ## Create a .env file in the project root:
 
@@ -168,7 +168,7 @@ MAIL_ID=your_email@gmail.com
 MAIL_PASSWORD=your_email_app_password
 ```
 
-## ⚠️ .env is ignored by Git for security reasons.
+⚠️ .env is ignored by Git for security reasons.
 
 
 
