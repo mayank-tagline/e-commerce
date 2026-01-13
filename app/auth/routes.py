@@ -1,8 +1,5 @@
 from flask import Blueprint ,session,redirect,url_for,flash,render_template,abort,current_app
-from ..models.product import Product
 from ..models.user import User
-from ..models.user_product import UserProduct
-
 from ..forms import LoginForm ,RegisterForm,ForgotPassword,ChangePassword,OtpPage
 from ..extensions import db,mail
 import random
