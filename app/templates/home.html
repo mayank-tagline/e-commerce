@@ -14,7 +14,7 @@
     <div class="header">
         <div class="logo">My Shop</div>
 
-        <div class="searchbar" id="searchbar">
+        <div class="searchbar"  id="searchbar">
             <input type="text" placeholder="Search products..." />
         </div>
 
@@ -33,40 +33,20 @@
 
             <div class="top">
                 <div class="home" id="sidebar-home">Home</div>
-                <!-- <div class="home" ><button onsubmit="return ">Home</button></div> -->
                 <div class="favorite" id="sidebar-favorite">Favorite</div>
                 <div class="profile" id="sidebar-profile">Profile</div>
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
                 <div class="filter" id="sidebar-filter">Filter</div>
-
-                <div class="filter-dropdown" id="filter-dropdown">
-                    <h4>Category</h4>
-                    <label><input type="checkbox" value="shirt"> Shirt</label><br>
-                    <label><input type="checkbox" value="pant"> Pant</label><br>
-                    <label><input type="checkbox" value="shoes"> Shoes</label>
-
-                    <h4>Gender</h4>
-                    <label><input type="checkbox" value="men"> Men</label><br>
-                    <label><input type="checkbox" value="women"> Women</label><br>
-                    <label><input type="checkbox" value="kids"> Kid</label>
-
-                    <h4>Price</h4>
-                    <input type="range" min="0" max="5000" step="100" id="priceRange">
-                    <p>Max Price: ₹<span id="priceValue">2500</span></p>
-
-                    <button id="apply-filter">Apply Filter</button>
-                    <a href="/filter">reset</a>
-
-                </div>
-
             </div>
             <div class="logout" id="sidebar-logout">Logout</div>
         </div>
 
         <!-- MAIN -->
         <div class="main">
+            <h2>Products</h2>
+
             {% if products %}
             <div class="products">
                 {% for product in products %}
@@ -88,24 +68,33 @@
                     {% endif %}>
 
                     <div class="buybutton">
-                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                        <a href="{{ url_for('payment.buyButton', product_id=product.id) }}">buy</a>
                     </div>
 
                 </div>
                 {% endfor %}
             </div>
-            {%  else  %}
-            <div class="notFound">
-                <h1>this products are currently not available</h1>
-            </div>
             {% endif %}
+
 
 
         </div>
     </div>
 
-
+    <!-- DELETE CONFIRM -->
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('.delete-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm('Are you sure you want to delete this product?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+
+
         const homebtn = document.getElementById('sidebar-home')
         homebtn.addEventListener('click', () => {
             window.location.href = '/home';
@@ -127,64 +116,44 @@
         })
 
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        if (myproductbtn) {
+        if(myproductbtn){
             myproductbtn.addEventListener('click', () => {
                 window.location.href = '/myproduct'
             })
         }
 
         const searchbar = document.getElementById('searchbar');
-        searchbar.addEventListener('click', () => {
+        searchbar.addEventListener('click', ()=> {
             window.location.href = '/search'
         })
 
+        const filter = document.getElementById('sidebar-filter');
+        filter.addEventListener('click',()=>{
+            window.location.href = '/filter'
+        })
     </script>
 
 </body>
 
 <script>
-    const filterBtn = document.getElementById('sidebar-filter');
-    const filterDropdown = document.getElementById('filter-dropdown');
+    document.querySelectorAll('.like-checkbox').forEach(box => {
+        box.addEventListener('change', function () {
+            fetch('/like', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    product_id: this.dataset.productId,
+                    liked: this.checked
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data.status);
+                });
 
-    filterBtn.addEventListener('click', () => {
-        if (filterDropdown.style.display === 'none' || filterDropdown.style.display === '') {
-            filterDropdown.style.display = 'block';
-        } else {
-            filterDropdown.style.display = 'none';
-        }
-    });
-
-    const priceRange = document.getElementById('priceRange');
-    const priceValue = document.getElementById('priceValue');
-
-    priceRange.addEventListener('input', () => {
-        priceValue.innerText = priceRange.value;
-    });
-</script>
-
-<script>
-    document.getElementById('apply-filter').addEventListener('click', () => {
-
-        const categories = Array.from(
-            document.querySelectorAll('input[value="shirt"], input[value="pant"], input[value="shoes"]')
-        ).filter(cb => cb.checked).map(cb => cb.value);
-
-        const genders = Array.from(
-            document.querySelectorAll('input[value="men"], input[value="women"], input[value="kids"]')
-        ).filter(cb => cb.checked).map(cb => cb.value);
-
-        const maxPrice = document.getElementById('priceRange').value;
-
-        const params = new URLSearchParams({
-            category: categories.join(','),
-            gender: genders.join(','),
-            price: maxPrice
         });
-
-        window.location.href = `/filter?${params.toString()}`;
     });
+
 </script>
-
-
 
 </html>

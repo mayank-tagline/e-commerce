@@ -68,7 +68,7 @@
                         liked_products %} checked {% endif %}>
 
                     <div class="buybutton">
-                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                        <a href="{{ url_for('payment.buyButton', product_id=product.id) }}">buy</a>
                     </div>
 
                 </div>

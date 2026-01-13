@@ -68,7 +68,7 @@
         <!-- MAIN -->
         <div class="main">
             <div class="add-product-box">
-                <a href="{{ url_for('addproduct', seller_id=user.id) }}">
+                <a href="{{ url_for('product.addproduct', seller_id=user.id) }}">
                     Add Your Product
                 </a>
             </div>
@@ -90,10 +90,10 @@
                     <p><strong>Product ID:</strong> {{ product.id }}</p>
 
                     <h3>
-                        <a href="{{ url_for('update', product_id=product.id) }}">update your product</a>
+                        <a href="{{ url_for('product.update', product_id=product.id) }}">update your product</a>
                     </h3>
 
-                    <form method="post" action="{{ url_for('delete', product_id=product.id) }}" class="delete-form"
+                    <form method="post" action="{{ url_for('product.delete', product_id=product.id) }}" class="delete-form"
                         onsubmit="return confirm('Are you sure, You want to delete this Product?');">
                         <button type="submit">Delete your product</button>
                     </form>
