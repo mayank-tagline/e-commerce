@@ -197,5 +197,33 @@
 </script>
 
 
+<script>
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('like-checkbox')) {
+        const productId = parseInt(e.target.dataset.productId);
+        const liked = e.target.checked;
+
+        fetch('/like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                liked: liked
+            })
+        })
+        .then(res => res.json())
+        .then(() => {
+            // refresh liked products from DB
+            return fetch('/liked-products');
+        })
+        .then(res => res.json())
+        .then(data => {
+            likedProducts = data;
+            console.log('Updated liked:', likedProducts);
+        });
+    }
+});
+</script>
+
 
 </html>
