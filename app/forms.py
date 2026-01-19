@@ -104,5 +104,5 @@ class OtpPage(FlaskForm):
 
 
 class ChangePassword(FlaskForm):
-    password = StringField("New Password",validators=[DataRequired()])
+    password = PasswordField("New Password",validators=[DataRequired()])
     submit = SubmitField("Change Password")

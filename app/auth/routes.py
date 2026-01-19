@@ -11,6 +11,7 @@ auth_bp = Blueprint('auth',__name__)
 
 @auth_bp.route('/login',methods = ['GET','POST'])
 def login():
+
     if 'user' in session:
         return redirect(url_for('home.home'))
     form = LoginForm()
@@ -31,6 +32,7 @@ def login():
 
 @auth_bp.route('/register', methods =['GET','POST'])
 def register():
+
     form = RegisterForm()
     if form.validate_on_submit():
         exist = User.query.filter_by(username = form.username.data).first()
@@ -54,17 +56,25 @@ def register():
 
 @auth_bp.route('/logout')
 def logout():
+
     session.pop("user",None)
     return redirect(url_for('home.main'))
 
 
+
 @auth_bp.route('/forgotpassword',methods =['GET','POST'])
 def forgotpassword():
+
     form = ForgotPassword()
-    otp = random.randint(100000,1000000)
     # print(otp)
 
     if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if not user:
+            flash("Email not registered")
+            return render_template('forgotpassword.html', form=form)
+
+        otp = random.randint(100000,999999)
         
         body = f"your otp is {otp}"
         subject = "forgot password "
@@ -85,8 +95,11 @@ def forgotpassword():
         return redirect(url_for('auth.otppage'))
     return render_template('forgotpassword.html', form = form)
 
+
+
 @auth_bp.route('/otppage',methods =['GET','POST'])
 def otppage():
+
     form = OtpPage()
     otp = session.get('otp')
     if not otp:
@@ -101,12 +114,14 @@ def otppage():
     return render_template('otppage.html',form = form)
 
 
+
 @auth_bp.route('/changepassword',methods =['GET','POST'])
 def changepassword():
+
     form = ChangePassword()
     email = session.get('email')
     if not email:
-        abort(404),404
+        abort(404)
     if form.validate_on_submit():
 
         user = User.query.filter_by(email = email).first()
@@ -117,6 +132,9 @@ def changepassword():
         user.password = form.password.data
 
         db.session.commit()
+        session.pop('otp', None)
+        session.pop('email', None)
+
         return redirect(url_for('auth.login'))
 
     return render_template('changepassword.html',form = form )

@@ -1,7 +1,6 @@
 from flask import Blueprint,session,redirect,url_for,render_template,flash
 from ..models.product import Product
 from ..models.user import User
-from ..models.user_product import UserProduct
 from ..models.order import Order
 
 from ..extensions import db
@@ -9,8 +8,9 @@ from ..extensions import db
 
 payment_bp = Blueprint('payment',__name__)
 
-@payment_bp.route('/buy/<product_id>')
+@payment_bp.route('/buy/<int:product_id>')
 def buyButton(product_id):
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     product = Product.query.filter_by(id = product_id).first()
@@ -21,8 +21,9 @@ def buyButton(product_id):
 
 
 
-@payment_bp.route('/payment/<int:product_price>')
-def payment(product_price):
+@payment_bp.route('/payment')
+def payment():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     
@@ -31,10 +32,13 @@ def payment(product_price):
         return redirect(url_for('home.home'))
 
     product = Product.query.get_or_404(product_id)
-    return render_template('payment.html',product_price = product_price, product = product)
+    return render_template('payment.html',product_price = product.product_price, product = product)
+
+
 
 @payment_bp.route('/success')
 def success():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     
@@ -47,24 +51,20 @@ def success():
 
     product = Product.query.get_or_404(product_id)
 
-    # 🔴 check stock
     if product.product_stock <= 0:
         flash("Product out of stock")
         return redirect(url_for('home.home'))
 
-    # ✅ create order
     order = Order(
         user_id=user.id,
         product_id=product.id,
         quantity=1
     )
 
-    # ✅ reduce stock
     product.product_stock -= 1
 
     db.session.add(order)
     db.session.commit()
 
-    # cleanup session
     session.pop('buy_product_id', None)
     return render_template('success.html')

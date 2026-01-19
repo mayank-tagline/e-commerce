@@ -88,10 +88,12 @@
                             <th>Username</th>
                             <th>Email</th>
                             <th>Password</th>
-                            <th>products</th>
-                            <th>Action</th>
+                            <th>Seller Products</th>
+                            <th>Bought Products</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
+
 
                     <tbody>
                         {% for user in users %}
@@ -102,19 +104,22 @@
                             <td>{{ user.email }}</td>
                             <td>{{ user.password }}</td>
 
-                            <!-- Role-based product view -->
+                            <!-- SELLER PRODUCTS (only for sellers) -->
                             <td>
                                 {% if user.user_type == 's' %}
                                 <a href="{{ url_for('admin.seller_products', seller_id=user.id) }}">
                                     View Seller Products
                                 </a>
-                                {% elif user.user_type == 'b' %}
+                                {% else %}
+                                —
+                                {% endif %}
+                            </td>
+
+                            <!-- BOUGHT PRODUCTS (for all users) -->
+                            <td>
                                 <a href="{{ url_for('admin.buyer_products', buyer_id=user.id) }}">
                                     View Bought Products
                                 </a>
-                                {% else %}
-                                N/A
-                                {% endif %}
                             </td>
 
                             <!-- ACTIONS -->
@@ -134,6 +139,7 @@
                         </tr>
                         {% endfor %}
                     </tbody>
+
 
                 </table>
             </div>

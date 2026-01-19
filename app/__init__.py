@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,render_template
 from config import Config
 from app.extensions import db,migrate,mail
 # from .extensions import db
@@ -34,6 +34,10 @@ def create_app():
     app.register_blueprint(product_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(admin_bp)
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template("404.html"), 404
 
     return app
 

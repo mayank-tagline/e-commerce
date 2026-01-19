@@ -8,6 +8,7 @@ filter_bp = Blueprint('filter',__name__)
 
 @filter_bp.route('/search')
 def search():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     
@@ -36,8 +37,11 @@ def search():
     
     return render_template('search.html' ,user = user, products = products, products_json = product_list, liked_products = liked_products)
 
+
+
 @filter_bp.route('/filter')
 def filter():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
 
@@ -59,10 +63,7 @@ def filter():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    # product = query
     products = query.order_by(Product.id.desc()).all()
-    # print(products)
-    # print(products[0].product_name)
 
     liked_products = [
         up.product_id

@@ -10,50 +10,62 @@ from ..extensions import db
 
 admin_bp = Blueprint('admin',__name__,url_prefix="/admin")
 
+def is_admin():
+
+    username = session.get("user")
+    if not username:
+        return None
+    user = User.query.filter_by(username=username).first()
+    if not user or user.user_type != "admin":
+        return None
+    return user
+
+
 @admin_bp.route("/")
 def main():
-    username = session.get('user')
 
-    if not username:
-        return redirect(url_for('auth.login'))
-
-    user = User.query.filter_by(username=username).first()
-
-    if not user or user.user_type != "admin":
-        return redirect(url_for('home.home'))
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
 
     return redirect(url_for("admin.dashboard"))
 
 
 @admin_bp.route("/dashboard")
 def dashboard():
-    username = session.get('user')
 
-    if not username:
-        return redirect(url_for('auth.login'))
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
 
-    user = User.query.filter_by(username=username).first()
-
-    if not user or user.user_type != "admin":
-        return redirect(url_for('home.home'))
-    
     products = Product.query.order_by(Product.id.desc()).all()
     users = User.query.order_by(User.id.desc()).all()
 
     liked_products = [
-        up.product_id for up in UserProduct.query.filter_by(user_id = user.id).all()
+        up.product_id for up in UserProduct.query.filter_by(user_id = admin.id).all()
     ]
     
-    return render_template("admin_dashboard.html",user= user,users=users,products = products,liked_products = liked_products)
+    return render_template("admin_dashboard.html",user= admin,users=users,products = products,liked_products = liked_products)
+
 
 @admin_bp.route("/seller/<int:seller_id>/products")
 def seller_products(seller_id):
+
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
+
     products = Product.query.filter_by(seller_id=seller_id).all()
     return render_template("admin_seller_products.html", products=products)
 
 
 @admin_bp.route("/buyer/<int:buyer_id>/products")
 def buyer_products(buyer_id):
+
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
+
     orders = Order.query.filter(Order.user_id == buyer_id).all()
 
     return render_template("admin_buyer_products.html",orders=orders)
@@ -61,6 +73,10 @@ def buyer_products(buyer_id):
 
 @admin_bp.route("/user/update/<int:user_id>", methods=["GET", "POST"])
 def update_user(user_id):
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
+
     user = User.query.get_or_404(user_id)
 
     if request.method == "POST":
@@ -68,7 +84,6 @@ def update_user(user_id):
         username = request.form.get("username")
         email = request.form.get("email")
 
-        # Check for existing username or email (excluding current user)
         existing_user = User.query.filter(
             User.id != user.id,
             or_(
@@ -95,9 +110,12 @@ def update_user(user_id):
 
 @admin_bp.route("/user/delete/<int:user_id>", methods=["POST"])
 def delete_user(user_id):
+    admin = is_admin()
+    if not admin:
+        return redirect(url_for("home.home"))
+
     user = User.query.get_or_404(user_id)
 
-    # Optional safety: prevent admin deleting himself
     if user.user_type == "admin":
         flash("Admin user cannot be deleted")
         return redirect(url_for("admin.dashboard"))
@@ -105,10 +123,11 @@ def delete_user(user_id):
     if user.user_type == "s":
         products = Product.query.filter_by(seller_id=user.id).all()
         for product in products:
+            Order.query.filter_by(product_id=product.id).delete()
             db.session.delete(product)
 
-    # 🔥 DELETE LIKED / USERPRODUCT ENTRIES
     UserProduct.query.filter_by(user_id=user.id).delete()
+    Order.query.filter_by(user_id=user.id).delete()
 
     db.session.delete(user)
     db.session.commit()

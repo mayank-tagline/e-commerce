@@ -24,6 +24,7 @@ def profile():
 
 @user_bp.route('/resetpassword',methods = ['GET','POST'])
 def resetpassword():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     
@@ -51,6 +52,7 @@ def resetpassword():
 
 @user_bp.route('/updateuser', methods = ['GET','POST'])
 def updateuser():
+    
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     

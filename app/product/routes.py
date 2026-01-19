@@ -1,7 +1,6 @@
 from flask import Blueprint,session,redirect,url_for,render_template,abort,request,current_app
 from ..models.product import Product
 from ..models.user import User
-from ..models.user_product import UserProduct
 from werkzeug.utils import secure_filename
 from ..forms import AddProduct,UpdateProduct
 from ..extensions import db
@@ -11,16 +10,26 @@ import os
 
 product_bp = Blueprint('product',__name__)
 
-@product_bp.route('/addproduct/<seller_id>', methods = ['GET', 'POST'])
+
+@product_bp.route('/addproduct/<int:seller_id>', methods = ['GET', 'POST'])
 def addproduct(seller_id):
-    username = session.get('user')
-    user = User.query.filter_by(username= username).first()
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+
     if user.user_type !='s':
-        abort(404),404
+        abort(404)
+
+    if seller_id != user.id:
+        abort(403)
+
+
     form = AddProduct()
     form.product_seller_id.data = seller_id
+
     if form.validate_on_submit():
         # exist = Product.query.filter_by(product_name = form.product_name.data).first()
         file = form.product_image.data
@@ -54,10 +63,11 @@ def addproduct(seller_id):
 @product_bp.route('/update/<int:product_id>', methods=['GET', 'POST'])
 def update(product_id):
 
-    username = session.get('user')
-    user = User.query.filter_by(username= username).first()
     if 'user' not in session:
         return redirect(url_for('auth.login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
     if user.user_type not in ['s', 'admin']:
         abort(404),404
 
@@ -102,18 +112,14 @@ def update(product_id):
 
 @product_bp.route('/delete/<int:product_id>',methods = ['POST'])
 def delete(product_id):
-    username = session.get('user')
-    user = User.query.filter_by(username= username).first()
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
     product = Product.query.get_or_404(product_id)
-    # if user.user_type !='s' and user.id != product.seller_id :
-    #     return "something wrong!"
-    # elif product :
-    #     db.session.delete(product)
-    #     db.session.commit()
-    # else:
-    #     return "yo!"
+
 
 # Admin can delete any product
     if user.user_type == 'admin':
@@ -129,21 +135,20 @@ def delete(product_id):
     else:
         abort(403)
 
-
     return redirect(url_for('product.myproduct'))
-
 
 
 
 @product_bp.route('/myproduct')
 def myproduct():
+
     if 'user' not in session:
         return redirect(url_for('auth.login'))
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
     if user.user_type !='s':
-        abort(404),404  
+        abort(404)
 
     seller_id = user.id
 
@@ -178,18 +183,19 @@ def myproduct():
             "stock":p.product_stock,
             "sellerId":p.seller_id
         })
-
-
     
     return render_template('myproduct.html' , user = user,products = products,products_json = product_list)
+
+
 
 @product_bp.route('/cancel')
 def cancel():
 
-    username = session.get('user')
-    user = User.query.filter_by(username= username).first()
     if 'user' not in session:
         return redirect(url_for('auth.login'))
+    
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
     
     if user.user_type == "admin":
         return redirect(url_for('admin.dashboard'))
