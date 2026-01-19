@@ -58,7 +58,7 @@ def update(product_id):
     user = User.query.filter_by(username= username).first()
     if 'user' not in session:
         return redirect(url_for('auth.login'))
-    if user.user_type !='s':
+    if user.user_type not in ['s', 'admin']:
         abort(404),404
 
     product = Product.query.get_or_404(product_id)
@@ -100,7 +100,7 @@ def update(product_id):
 
 
 
-@product_bp.route('/delete/<int:product_id>',methods = ['POST','GET'])
+@product_bp.route('/delete/<int:product_id>',methods = ['POST'])
 def delete(product_id):
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
@@ -115,14 +115,20 @@ def delete(product_id):
     # else:
     #     return "yo!"
 
-    if user.user_type =='s' and user.id == product.seller_id :
-        if product :
-            db.session.delete(product)
-            db.session.commit()
-        else:
-            return "product not found"
+# Admin can delete any product
+    if user.user_type == 'admin':
+        db.session.delete(product)
+        db.session.commit()
+        return redirect(url_for('admin.dashboard'))
+
+    # Seller can delete only his own product
+    elif user.user_type == 's' and product.seller_id == user.id:
+        db.session.delete(product)
+        db.session.commit()
+
     else:
-        abort(404),404
+        abort(403)
+
 
     return redirect(url_for('product.myproduct'))
 
@@ -179,4 +185,12 @@ def myproduct():
 
 @product_bp.route('/cancel')
 def cancel():
+
+    username = session.get('user')
+    user = User.query.filter_by(username= username).first()
+    if 'user' not in session:
+        return redirect(url_for('auth.login'))
+    
+    if user.user_type == "admin":
+        return redirect(url_for('admin.dashboard'))
     return redirect(url_for('product.myproduct'))

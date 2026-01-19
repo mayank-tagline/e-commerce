@@ -40,7 +40,7 @@ def resetpassword():
             user.password = form.new_password.data
 
             db.session.commit()
-            return redirect(url_for('home.profile'))
+            return redirect(url_for('user.profile'))
         return " password is wrong!"
 
     username = session.get('user')
@@ -73,7 +73,7 @@ def updateuser():
 
         db.session.commit()
         session["user"] = user.username
-        return redirect(url_for('home.profile'))
+        return redirect(url_for('user.profile'))
 
     return render_template('updateuser.html',user= user, form = form )
 

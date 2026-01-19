@@ -38,6 +38,9 @@
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
+                {% if user.user_type == 'admin' %}
+                <div class="admin" id="sidebar-dashboard">admin dashboard</div>
+                {% endif %}
                 <div class="filter" id="sidebar-filter">Filter</div>
             </div>
             <div class="logout" id="sidebar-logout">Logout</div>
@@ -121,6 +124,14 @@
                 window.location.href = '/myproduct'
             })
         }
+
+        const admindashboardbtn = document.getElementById('sidebar-dashboard');
+        if (admindashboardbtn) {
+            admindashboardbtn.addEventListener('click', () => {
+                window.location.href = '/admin'
+            })
+        }
+
 
         const searchbar = document.getElementById('searchbar');
         searchbar.addEventListener('click', ()=> {

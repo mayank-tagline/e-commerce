@@ -24,6 +24,7 @@ def create_app():
     from .payment.routes import payment_bp
     from .product.routes import product_bp
     from .user.routes import user_bp
+    from .admin.routes import admin_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(filter_bp)
@@ -32,6 +33,7 @@ def create_app():
     app.register_blueprint(payment_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(admin_bp)
 
     return app
 

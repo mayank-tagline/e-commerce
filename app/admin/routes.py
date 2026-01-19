@@ -1,0 +1,115 @@
+from flask import Blueprint,redirect,url_for,render_template,session,flash,request 
+from sqlalchemy import or_
+from ..models.user import User
+from ..models.user_product import UserProduct
+from ..models.product import Product
+from ..models.order import Order
+
+from ..extensions import db
+
+
+admin_bp = Blueprint('admin',__name__,url_prefix="/admin")
+
+@admin_bp.route("/")
+def main():
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user or user.user_type != "admin":
+        return redirect(url_for('home.home'))
+
+    return redirect(url_for("admin.dashboard"))
+
+
+@admin_bp.route("/dashboard")
+def dashboard():
+    username = session.get('user')
+
+    if not username:
+        return redirect(url_for('auth.login'))
+
+    user = User.query.filter_by(username=username).first()
+
+    if not user or user.user_type != "admin":
+        return redirect(url_for('home.home'))
+    
+    products = Product.query.order_by(Product.id.desc()).all()
+    users = User.query.order_by(User.id.desc()).all()
+
+    liked_products = [
+        up.product_id for up in UserProduct.query.filter_by(user_id = user.id).all()
+    ]
+    
+    return render_template("admin_dashboard.html",user= user,users=users,products = products,liked_products = liked_products)
+
+@admin_bp.route("/seller/<int:seller_id>/products")
+def seller_products(seller_id):
+    products = Product.query.filter_by(seller_id=seller_id).all()
+    return render_template("admin_seller_products.html", products=products)
+
+
+@admin_bp.route("/buyer/<int:buyer_id>/products")
+def buyer_products(buyer_id):
+    orders = Order.query.filter(Order.user_id == buyer_id).all()
+
+    return render_template("admin_buyer_products.html",orders=orders)
+
+
+@admin_bp.route("/user/update/<int:user_id>", methods=["GET", "POST"])
+def update_user(user_id):
+    user = User.query.get_or_404(user_id)
+
+    if request.method == "POST":
+
+        username = request.form.get("username")
+        email = request.form.get("email")
+
+        # Check for existing username or email (excluding current user)
+        existing_user = User.query.filter(
+            User.id != user.id,
+            or_(
+                User.username == username,
+                User.email == email
+            )
+        ).first()
+
+        if existing_user:
+            if existing_user.username == username:
+                flash("Username already exists", "error")
+            if existing_user.email == email:
+                flash("Email already exists", "error")
+            return redirect(url_for("admin.update_user", user_id=user.id))
+
+        user.username = request.form.get("username")
+        user.email = request.form.get("email")
+
+        db.session.commit()
+        return redirect(url_for("admin.dashboard"))
+
+    return render_template("admin_update_user.html", user=user)
+
+
+@admin_bp.route("/user/delete/<int:user_id>", methods=["POST"])
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+
+    # Optional safety: prevent admin deleting himself
+    if user.user_type == "admin":
+        flash("Admin user cannot be deleted")
+        return redirect(url_for("admin.dashboard"))
+    
+    if user.user_type == "s":
+        products = Product.query.filter_by(seller_id=user.id).all()
+        for product in products:
+            db.session.delete(product)
+
+    # 🔥 DELETE LIKED / USERPRODUCT ENTRIES
+    UserProduct.query.filter_by(user_id=user.id).delete()
+
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for("admin.dashboard"))
