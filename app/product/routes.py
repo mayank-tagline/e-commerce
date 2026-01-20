@@ -168,7 +168,7 @@ def myproduct():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    products = query.order_by(Product.id.desc()).all()
+    products = query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
 
     product_list = []
     for p in products:

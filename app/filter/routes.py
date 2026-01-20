@@ -15,8 +15,8 @@ def search():
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
 
-    query = Product.query
-    products = query.order_by(Product.id.desc()).all()
+    
+    products = Product.query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
 
 
     liked_products = [p.product_id for p in UserProduct.query.filter_by(user_id=user.id).all()]
@@ -63,7 +63,7 @@ def filter():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    products = query.order_by(Product.id.desc()).all()
+    products = query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
 
     liked_products = [
         up.product_id

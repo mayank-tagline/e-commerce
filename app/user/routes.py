@@ -1,7 +1,5 @@
 from flask import Blueprint,render_template,session,redirect,url_for
-from ..models.product import Product
 from ..models.user import User
-from ..models.user_product import UserProduct
 from ..extensions import db
 from ..forms import ResetPassword,UpdateUser
 
