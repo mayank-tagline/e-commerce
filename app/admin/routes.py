@@ -26,7 +26,9 @@ def main():
 
     admin = is_admin()
     if not admin:
-        return redirect(url_for("home.home"))
+        session.pop("user", None)   # logout user safely
+        flash("Admin access required. Please login again.", "error")
+        return redirect(url_for("auth.login"))
 
     return redirect(url_for("admin.dashboard"))
 
@@ -83,6 +85,7 @@ def update_user(user_id):
 
         username = request.form.get("username")
         email = request.form.get("email")
+        status = request.form.get("status")
 
         existing_user = User.query.filter(
             User.id != user.id,
@@ -99,8 +102,14 @@ def update_user(user_id):
                 flash("Email already exists", "error")
             return redirect(url_for("admin.update_user", user_id=user.id))
 
-        user.username = request.form.get("username")
-        user.email = request.form.get("email")
+
+        if user.user_type == "admin" and status == "block":
+            flash("Admin user cannot be blocked", "error")
+            return redirect(url_for("admin.update_user", user_id=user.id))
+
+        user.username = username
+        user.email = email
+        user.status = status
 
         db.session.commit()
         return redirect(url_for("admin.dashboard"))

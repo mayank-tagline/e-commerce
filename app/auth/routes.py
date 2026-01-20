@@ -20,6 +20,9 @@ def login():
             username= form.username.data,
             password = form.password.data
         ).first()
+        if user.status =='block':
+            flash('your account has been blocked by admin')
+            return redirect(url_for('auth.login'))
         if user:
             session["user"] = user.username
             return redirect(url_for("home.home"))

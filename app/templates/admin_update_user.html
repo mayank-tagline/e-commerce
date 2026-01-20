@@ -16,7 +16,16 @@
     <label>Email</label>
     <input type="email" name="email" value="{{ user.email }}" required>
 
+    <label>Status</label>
+    <div>
+        <input type="radio" name="status" value="active"
+               {% if user.status == 'active' %}checked{% endif %}>
+        Active
 
+        <input type="radio" name="status" value="block"
+               {% if user.status == 'block' %}checked{% endif %}>
+        Block
+    </div>
 
     <button type="submit">Update</button>
 </form>

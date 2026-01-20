@@ -211,15 +211,20 @@ document.addEventListener('change', function (e) {
                 liked: liked
             })
         })
-        .then(res => res.json())
-        .then(() => {
-            // refresh liked products from DB
-            return fetch('/liked-products');
+        .then(res => {
+            if (!res.ok) throw new Error('/like failed');
+            return res.json();
         })
-        .then(res => res.json())
+        .then(() => fetch('/liked-products'))
+        .then(res => {
+            if (!res.ok) throw new Error('/liked-products not found');
+            return res.json();
+        })
         .then(data => {
-            likedProducts = data;
-            console.log('Updated liked:', likedProducts);
+            console.log('Updated liked:', data);
+        })
+        .catch(err => {
+            console.error('Like error:', err.message);
         });
     }
 });
