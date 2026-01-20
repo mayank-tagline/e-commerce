@@ -1,114 +1,95 @@
-# 🛒 Flask E-Commerce Web Application
+🛒 E-Commerce Website (Flask)
+A full-stack E-Commerce web application built using **Flask, SQLAlchemy, Jinja2, and JavaScript**.  
+This project focuses on **backend architecture, database relationships, role-based access, and admin controls**.
 
-A **full-stack e-commerce web application** built using **Flask**, **SQLAlchemy**, and **SQLite**.  
-This project focuses on **backend fundamentals**, **secure authentication**, **database relationships**, **filtering & searching**, and a **persistent favorite (like) system** rather than UI design.
-
----
-
-## ✨ Overview
-
-This application allows users to:
-
-- Register & login securely  
-- Browse products  
-- Search & filter products  
-- Like (favorite) products  
-- Manage user profile  
-- Sellers manage their own products  
-
-🎯 **Goal:** Demonstrate Flask fundamentals, CRUD operations, session handling, database design, AJAX usage, and clean project structure.
+🔗 GitHub Repository:  
+https://github.com/mayank-tagline/e-commerce
 
 ---
 
-## 🔥 Key Features
+## 📌 Project Overview
 
-### 🔐 Authentication
-- User Registration  
-- Login & Logout  
-- Session-based authentication  
-- Buyer / Seller role handling  
-- Profile page  
+This application allows:
+
+- **Buyers** to browse, search, filter, and like products
+- **Sellers** to add, update, manage, and hide their own products
+- **Admins** to manage users and control platform access
+
+The primary goal of this project is to demonstrate **clean Flask architecture**, **ORM usage**, **migrations**, and **real-world business logic** rather than UI design.
+
+---
+
+## ✨ Features
+
+### 👤 Authentication & Roles
+- User Registration
+- Login & Logout
+- Session-based authentication
+- Password hashing
+- CSRF protection
+- Role-based access:
+  - Buyer
+  - Seller
+  - Admin
+
+---
+
+### 🧑‍💼 Admin Panel
+- View all users
+- Update username & email
+- Block / Activate users
+- Prevent admin from being blocked
+- Automatically **hide seller products when seller is blocked**
+- Reactivate seller products when seller becomes active
+
+---
 
 ### 🛍️ Product Management
-- View all products  
-- Products displayed in **LIFO order** (latest added first)  
-
-**Seller capabilities:**
-- Add products  
-- Update products  
-- Delete products  
-- View only their own products  
-
-### 🔍 Search & Filter
-- Live product search  
-- Filter products by:
-  - Category (Shirt, Pant, Shoes)
-  - Gender (Men, Women, Kids)
-  - Price range  
-
-### ❤️ Favorites / Like System
-- Like & unlike products using checkbox  
-- Favorites stored in database  
-- Favorite state persists after reload & logout  
-- AJAX-based interaction (**no page reload**)  
-
-### 👤 User Profiles
-- View & manage profile  
-- View favorite products  
-- Role-based access control (buyer / seller)  
+- View all active products (LIFO order)
+- Product status:
+  - `active`
+  - `hide`
+- Sellers can:
+  - Add products
+  - Update products
+  - Delete products
+  - View only their own products
+  - Hide / activate products
+- Blocked sellers’ products are automatically hidden
 
 ---
 
-## 🧱 Project Structure
+### 🔍 Search & Filter
+- Search products by name
+- Filter by:
+  - Category (Shirt, Pant, Shoes)
+  - Gender (Men, Women, Kids)
+  - Price range
+- Hidden products never appear in results
 
-```text
-e-commerce/
-├── instance/
-│   └── database.db
-├── migrations/
-├── static/
-│   ├── uploads/
-│   └── style.css
-├── templates/
-│   ├── 404.html
-│   ├── addProduct.html
-│   ├── buy.html
-│   ├── changepassword.html
-│   ├── extra.html
-│   ├── favorite.html
-│   ├── filter.html
-│   ├── forgotpassword.html
-│   ├── home.html
-│   ├── login.html
-│   ├── main.html
-│   ├── myproduct.html
-│   ├── otppage.html
-│   ├── payment.html
-│   └── profile.html
-│   ├── register.html
-│   ├── resetpassword.html
-│   ├── search.html
-│   ├── success.html
-│   ├── update.html
-│   ├── updateuser.html
-├── .env
-├── data.db
-├── forms.py
-├── main.py
-├── README.md
-└── requirement.txt
+---
 
-```
+### ❤️ Favorite / Like System
+- Like & unlike products
+- Favorites stored in database
+- Favorite state persists after reload
+- AJAX-based (Fetch API)
+- No page reload required
+- View all liked products
 
+---
 
 ## 🧱 Database Models
 
 ### User
 - id
-- user_type (buyer / seller)
-- username
-- email
-- password
+- username (unique)
+- email (unique)
+- password (hashed)
+- user_type (`buyer`, `seller`, `admin`)
+- status (`active`, `block`)
+
+---
 
 ### Product
 - id
@@ -120,6 +101,9 @@ e-commerce/
 - product_gender
 - product_stock
 - seller_id (ForeignKey → User)
+- status (`active`, `hide`)
+
+---
 
 ### UserProduct (Favorites)
 - id
@@ -128,93 +112,219 @@ e-commerce/
 
 ---
 
-## 🛠️ Tech Stack
+## 🗂️ Project Structure
 
-| Layer      | Technology     |
-|------------|----------------|
-| Backend    | Flask          |
-| ORM        | SQLAlchemy     |
-| Database   | SQLite         |
-| Templates  | Jinja2         |
-| Forms      | Flask-WTF      |
-| Migration  | Flask-Migrate  |
-| Frontend   | HTML, CSS, JS  |
-| AJAX       | Fetch API      |
+
+```text
+e-commerce/
+│
+├── app/
+│ ├── admin/
+│ ├── auth/
+│ ├── filter/
+│ ├── home/
+│ ├── interaction/
+│ ├── models/
+│ ├── payment/
+│ ├── product/
+│ ├── user/
+├─├── static/
+│    ├── uploads/
+│    └── style.css
+│ ├── templates/
+│ ├── __init__.py/
+│ ├── forms.py/
+│ └── extensions.py
+│
+├── instance/
+│ └── data.db
+│
+├── migrations/
+│
+│
+├── .env
+├── run.py
+├── config.py
+├── requirements.txt
+└── README.md
+```
 
 ---
 
-## ⚙️ Installation & Setup
+---
+
+## 🛠️ Tech Stack
+
+| Layer        | Technology        |
+|-------------|------------------|
+| Backend     | Flask            |
+| ORM         | SQLAlchemy       |
+| Database    | SQLite           |
+| Templates   | Jinja2           |
+| Forms       | Flask-WTF        |
+| Migrations  | Flask-Migrate    |
+| Frontend    | HTML, CSS, JS    |
+| AJAX        | Fetch API        |
+
+---
+
+## 🚀 How to Run the Project
 
 ### 1️⃣ Clone the Repository
 ```bash
 git clone https://github.com/mayank-tagline/e-commerce.git
+```
+```bash
 cd e-commerce
+
 ```
 
-## 2️⃣ Create & Activate Virtual Environment
+### 2️⃣ Create & Activate Virtual Environment
 
 **macOS / Linux**
+
 ```bash
 python3 -m venv .venv
+```
+```bash
 source .venv/bin/activate
 ```
 
-## 🪟 Windows
+**Windows**
 
 ```bash
 python -m venv .venv
+```
+```bash
 .venv\Scripts\activate
 ```
 
-
-## 3️⃣ Install Dependencies
+### 3️⃣ Install Dependencies
 
 ```bash
 pip install -r requirement.txt
 ```
 
+---
 
- 🔐 Environment Variables (.env)
+## 🔐 Environment Variables
 
-## Create a .env file in the project root:
+Create a `.env` file in the project root:
 
-```bash
-MAIL_ID=your_email@gmail.com
-MAIL_PASSWORD=your_email_app_password
+```env
 SECRET_KEY=your_key
 DATABASE_URL=sqlite:///data.db
+MAIL_ID=mayankdri.tagline@gmail.com
+MAIL_PASSWORD=your_email_app_password
 ```
 
-⚠️ .env is ignored by Git for security reasons.
+⚠️ **Do not commit `.env` to Git**
+It contains sensitive information.
 
+---
 
-## `export FLASK_APP` 
-## this step is compulsary 
+### 4️⃣ Set Flask App Environment Variable
+
+**macOS / Linux**
 
 ```bash
-export FLASK_APP=main.py
+export FLASK_APP="app:create_app"
 ```
 
+**Windows**
+
+```bash
+set FLASK_APP=app:create_app
+```
+
+---
 
 ## 🗄️ Database Migration
-## First-time setup (if migrations/ does not exist)
+
+If `migrations/` folder does **not** exist (run once):
+
 ```bash
 flask db init
-flask db migrate -m "Initial migration"
+```
+
+Then run:
+
+```bash
+flask db stamp head
+```
+```bash
+flask db migrate -m "initial migration"
+```
+```bash
 flask db upgrade
 ```
 
-## If migrations already exist
+
+
+---
+
+## ▶️ Run the Application
+
 ```bash
-flask db migrate
-flask db upgrade
+flask run
 ```
 
 
+Open your browser and visit:
 
-## ▶️ Running the Application
-```bash
-python main.py
 ```
-## Open in browser:
-## 👉 http://127.0.0.1:5000
+http://127.0.0.1:5000
+```
+
+---
+
+## 👤 User Flow
+
+1. Open the application
+2. Register as Buyer or Seller
+3. Login
+4. Browse all products
+5. Search & filter products
+6. Like favorite products ❤️
+7. Sellers manage their products
+8. View profile and favorites
+
+---
+
+## ❗ Error Handling
+
+The application handles:
+
+* Invalid login credentials
+* Unauthorized access
+* Invalid form submissions
+* Product ownership validation
+* Image upload validation
+
+---
+
+## 🔒 Security Notes
+
+* Passwords are hashed
+* Session-based authentication
+* CSRF protection enabled
+* `.env` excluded from version control
+
+---
+
+## 🚧 Future Improvements
+
+* Product pagination
+* Reviews & ratings
+* Payment gateway integration
+* Admin dashboard
+* Improved UI/UX
+
+---
+
+## 👨‍💻 Author
+
+**Mayank Dobariya**
+GitHub 👉 [https://github.com/mayank-tagline](https://github.com/mayank-tagline)
+
+⭐ *If you like this project, please give it a star!*
