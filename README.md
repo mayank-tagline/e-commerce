@@ -181,6 +181,8 @@ pip install -r requirement.txt
 ```bash
 MAIL_ID=your_email@gmail.com
 MAIL_PASSWORD=your_email_app_password
+SECRET_KEY=your_key
+DATABASE_URL=sqlite:///data.db
 ```
 
 ⚠️ .env is ignored by Git for security reasons.
