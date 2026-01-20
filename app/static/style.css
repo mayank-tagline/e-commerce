@@ -189,3 +189,20 @@
     font-weight: 600;
     transition: 0.3s ease;
 }
+
+
+.user-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th {
+    background: #222;
+    color: white;
+}
+
+.user-table th,
+.user-table td {
+    padding: 10px;
+    text-align: left;
+}

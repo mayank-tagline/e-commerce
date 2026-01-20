@@ -39,6 +39,9 @@
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
+                {% if user.user_type == 'admin' %}
+                <div class="admin" id="sidebar-dashboard">admin dashboard</div>
+                {% endif %}
                 <div class="filter" id="sidebar-filter">Filter</div>
 
                 <div class="filter-dropdown" id="filter-dropdown">
@@ -88,7 +91,7 @@
                     {% endif %}>
 
                     <div class="buybutton">
-                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                        <a href="{{ url_for('payment.buyButton', product_id=product.id) }}">buy</a>
                     </div>
 
                 </div>
@@ -132,6 +135,14 @@
                 window.location.href = '/myproduct'
             })
         }
+
+        const admindashboardbtn = document.getElementById('sidebar-dashboard');
+        if (admindashboardbtn) {
+            admindashboardbtn.addEventListener('click', () => {
+                window.location.href = '/admin'
+            })
+        }
+
 
         const searchbar = document.getElementById('searchbar');
         searchbar.addEventListener('click', () => {
@@ -185,6 +196,39 @@
     });
 </script>
 
+
+<script>
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('like-checkbox')) {
+        const productId = parseInt(e.target.dataset.productId);
+        const liked = e.target.checked;
+
+        fetch('/like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                product_id: productId,
+                liked: liked
+            })
+        })
+        .then(res => {
+            if (!res.ok) throw new Error('/like failed');
+            return res.json();
+        })
+        .then(() => fetch('/liked-products'))
+        .then(res => {
+            if (!res.ok) throw new Error('/liked-products not found');
+            return res.json();
+        })
+        .then(data => {
+            console.log('Updated liked:', data);
+        })
+        .catch(err => {
+            console.error('Like error:', err.message);
+        });
+    }
+});
+</script>
 
 
 </html>

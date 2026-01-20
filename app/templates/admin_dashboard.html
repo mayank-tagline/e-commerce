@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo">My Shop</div>
+
+        <div class="searchbar" id="searchbar">
+            <input type="text" placeholder="Search products..." />
+        </div>
+
+        <div class="right">
+            <div class="favorite"><a href="/favorite">Favorite</a></div>
+            <div class="logout"><a href="/logout">Logout</a></div>
+            <div class="profile"><a href="/profile">Profile</a></div>
+        </div>
+    </div>
+
+    <!-- LAYOUT -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+
+            <div class="top">
+                <div class="home" id="sidebar-home">Home</div>
+                <!-- <div class="home" ><button onsubmit="return ">Home</button></div> -->
+                <div class="favorite" id="sidebar-favorite">Favorite</div>
+                <div class="profile" id="sidebar-profile">Profile</div>
+                {% if user.user_type == 's' %}
+                <div class="my_product" id="sidebar-myproduct">My Product</div>
+                {% endif %}
+                {% if user.user_type == 'admin' %}
+                <div class="admin" id="sidebar-dashboard">admin dashboard</div>
+                {% endif %}
+                <div class="filter" id="sidebar-filter">Filter</div>
+
+                <div class="filter-dropdown" id="filter-dropdown">
+                    <h4>Category</h4>
+                    <label><input type="checkbox" value="shirt"> Shirt</label><br>
+                    <label><input type="checkbox" value="pant"> Pant</label><br>
+                    <label><input type="checkbox" value="shoes"> Shoes</label>
+
+                    <h4>Gender</h4>
+                    <label><input type="checkbox" value="men"> Men</label><br>
+                    <label><input type="checkbox" value="women"> Women</label><br>
+                    <label><input type="checkbox" value="kids"> Kid</label>
+
+                    <h4>Price</h4>
+                    <input type="range" min="0" max="5000" step="100" id="priceRange">
+                    <p>Max Price: ₹<span id="priceValue">5000</span></p>
+
+                    <button id="apply-filter">Apply Filter</button>
+
+                </div>
+
+            </div>
+            <div class="logout" id="sidebar-logout">Logout</div>
+        </div>
+
+        <!-- MAIN -->
+        <div class="main">
+
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            {% if users %}
+            <div class="user-table">
+                <table border="1" cellpadding="10" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User Type</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Password</th>
+                            <th>status</th>
+                            <th>Seller Products</th>
+                            <th>Bought Products</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td>{{ user.user_type }}</td>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{{ user.password }}</td>
+                            <td>{{ user.status }}</td>
+
+                            <!-- SELLER PRODUCTS (only for sellers) -->
+                            <td>
+                                {% if user.user_type == 's' %}
+                                <a href="{{ url_for('admin.seller_products', seller_id=user.id) }}">
+                                    View Seller Products
+                                </a>
+                                {% else %}
+                                —
+                                {% endif %}
+                            </td>
+
+                            <!-- BOUGHT PRODUCTS (for all users) -->
+                            <td>
+                                <a href="{{ url_for('admin.buyer_products', buyer_id=user.id) }}">
+                                    View Bought Products
+                                </a>
+                            </td>
+
+                            <!-- ACTIONS -->
+                            <td>
+                                <!-- UPDATE USER -->
+                                <a href="{{ url_for('admin.update_user', user_id=user.id) }}">
+                                    Edit
+                                </a>
+
+                                <!-- DELETE USER -->
+                                <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                                    style="display:inline;"
+                                    onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+
+
+                </table>
+            </div>
+            {% else %}
+            <p>No users found.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+
+    <script>
+        const homebtn = document.getElementById('sidebar-home')
+        homebtn.addEventListener('click', () => {
+            window.location.href = '/home';
+        });
+
+        const favoritebtn = document.getElementById('sidebar-favorite');
+        favoritebtn.addEventListener('click', () => {
+            window.location.href = '/favorite';
+        });
+
+        const profilebtn = document.getElementById('sidebar-profile');
+        profilebtn.addEventListener('click', () => {
+            window.location.href = '/profile';
+        })
+
+        const logoutbtn = document.getElementById('sidebar-logout');
+        logoutbtn.addEventListener('click', () => {
+            window.location.href = '/logout'
+        })
+
+        const myproductbtn = document.getElementById('sidebar-myproduct');
+        if (myproductbtn) {
+            myproductbtn.addEventListener('click', () => {
+                window.location.href = '/myproduct'
+            })
+        }
+
+        const admindashboardbtn = document.getElementById('sidebar-dashboard');
+        if (admindashboardbtn) {
+            admindashboardbtn.addEventListener('click', () => {
+                window.location.href = '/admin'
+            })
+        }
+
+        const searchbar = document.getElementById('searchbar');
+        searchbar.addEventListener('click', () => {
+            window.location.href = '/search'
+        })
+
+    </script>
+
+</body>
+
+<script>
+    const filterBtn = document.getElementById('sidebar-filter');
+    const filterDropdown = document.getElementById('filter-dropdown');
+
+    filterBtn.addEventListener('click', () => {
+        if (filterDropdown.style.display === 'none' || filterDropdown.style.display === '') {
+            filterDropdown.style.display = 'block';
+        } else {
+            filterDropdown.style.display = 'none';
+        }
+    });
+
+    const priceRange = document.getElementById('priceRange');
+    const priceValue = document.getElementById('priceValue');
+
+    priceRange.addEventListener('input', () => {
+        priceValue.innerText = priceRange.value;
+    });
+</script>
+
+</html>

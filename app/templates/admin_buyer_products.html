@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>Buyer Products</h2>
+    <a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a>
+
+
+    <table border="1" cellpadding="10">
+        <tr>
+            <th>Order ID</th>
+            <th>Product Name</th>
+            <th>Price</th>
+            <th>Category</th>
+            <th>Gender</th>
+            <th>Stock</th>
+            <th>Quantity Bought</th>
+            <th>Image</th>
+        </tr>
+
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.product.product_name }}</td>
+            <td>{{ order.product.product_price }}</td>
+            <td>{{ order.product.product_category }}</td>
+            <td>{{ order.product.product_gender }}</td>
+            <td>{{ order.product.product_stock }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>
+                <img src="{{ url_for('static', filename='uploads/' + order.product.product_image) }}" width="80">
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+</body>
+
+</html>

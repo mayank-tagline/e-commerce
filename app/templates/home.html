@@ -14,8 +14,8 @@
     <div class="header">
         <div class="logo">My Shop</div>
 
-        <div class="searchbar" id="searchbar">
-            <input type="text" id="search" placeholder="Search products..." />
+        <div class="searchbar"  id="searchbar">
+            <input type="text" placeholder="Search products..." />
         </div>
 
         <div class="right">
@@ -33,11 +33,13 @@
 
             <div class="top">
                 <div class="home" id="sidebar-home">Home</div>
-                <!-- <div class="home" ><button onsubmit="return ">Home</button></div> -->
                 <div class="favorite" id="sidebar-favorite">Favorite</div>
                 <div class="profile" id="sidebar-profile">Profile</div>
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
+                {% endif %}
+                {% if user.user_type == 'admin' %}
+                <div class="admin" id="sidebar-dashboard">admin dashboard</div>
                 {% endif %}
                 <div class="filter" id="sidebar-filter">Filter</div>
             </div>
@@ -46,8 +48,7 @@
 
         <!-- MAIN -->
         <div class="main">
-            <h1>This is favorite page.</h1>
-
+            <h2>Products</h2>
 
             {% if products %}
             <div class="products">
@@ -64,22 +65,39 @@
                     <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                     <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
                     <p><strong>Product ID:</strong> {{ product.id }}</p>
-                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" {% if product.id in
-                        liked_products %} checked {% endif %}>
+                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" 
+                    {% if product.id in liked_products %}
+                        checked 
+                    {% endif %}>
 
                     <div class="buybutton">
-                        <a href="{{ url_for('buyButton', product_id=product.id) }}">buy</a>
+                        <a href="{{ url_for('payment.buyButton', product_id=product.id) }}">buy</a>
                     </div>
 
                 </div>
                 {% endfor %}
             </div>
             {% endif %}
+
+
+
         </div>
     </div>
 
-
+    <!-- DELETE CONFIRM -->
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const forms = document.querySelectorAll('.delete-form');
+            forms.forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    if (!confirm('Are you sure you want to delete this product?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+
+
         const homebtn = document.getElementById('sidebar-home')
         homebtn.addEventListener('click', () => {
             window.location.href = '/home';
@@ -100,13 +118,20 @@
             window.location.href = '/logout'
         })
 
-
         const myproductbtn = document.getElementById('sidebar-myproduct');
         if(myproductbtn){
             myproductbtn.addEventListener('click', () => {
                 window.location.href = '/myproduct'
             })
         }
+
+        const admindashboardbtn = document.getElementById('sidebar-dashboard');
+        if (admindashboardbtn) {
+            admindashboardbtn.addEventListener('click', () => {
+                window.location.href = '/admin'
+            })
+        }
+
 
         const searchbar = document.getElementById('searchbar');
         searchbar.addEventListener('click', ()=> {
@@ -117,7 +142,6 @@
         filter.addEventListener('click',()=>{
             window.location.href = '/filter'
         })
-
     </script>
 
 </body>

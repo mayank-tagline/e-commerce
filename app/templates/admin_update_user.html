@@ -1,0 +1,31 @@
+<h2>Update User</h2>
+
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="POST">
+    <label>Username</label>
+    <input type="text" name="username" value="{{ user.username }}" required>
+
+    <label>Email</label>
+    <input type="email" name="email" value="{{ user.email }}" required>
+
+    <label>Status</label>
+    <div>
+        <input type="radio" name="status" value="active"
+               {% if user.status == 'active' %}checked{% endif %}>
+        Active
+
+        <input type="radio" name="status" value="block"
+               {% if user.status == 'block' %}checked{% endif %}>
+        Block
+    </div>
+
+    <button type="submit">Update</button>
+</form>

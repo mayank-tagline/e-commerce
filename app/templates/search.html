@@ -39,7 +39,10 @@
                 {% if user.user_type == 's' %}
                 <div class="my_product" id="sidebar-myproduct">My Product</div>
                 {% endif %}
-                <div class="filter"  id="sidebar-filter">Filter</div>
+                {% if user.user_type == 'admin' %}
+                <div class="admin" id="sidebar-dashboard">admin dashboard</div>
+                {% endif %}
+                <div class="filter" id="sidebar-filter">Filter</div>
             </div>
             <div class="logout" id="sidebar-logout">Logout</div>
         </div>
@@ -53,47 +56,55 @@
 
         </div>
     </div>
-    
+
 
     <script>
         const homebtn = document.getElementById('sidebar-home')
-        homebtn.addEventListener('click', ()=> {
+        homebtn.addEventListener('click', () => {
             window.location.href = '/home';
         });
 
         const favoritebtn = document.getElementById('sidebar-favorite');
-        favoritebtn.addEventListener('click',()=> {
+        favoritebtn.addEventListener('click', () => {
             window.location.href = '/favorite';
         });
 
         const profilebtn = document.getElementById('sidebar-profile');
-        profilebtn.addEventListener('click',()=> {
+        profilebtn.addEventListener('click', () => {
             window.location.href = '/profile';
         })
-        
+
         const logoutbtn = document.getElementById('sidebar-logout');
-        logoutbtn.addEventListener('click', ()=> {
+        logoutbtn.addEventListener('click', () => {
             window.location.href = '/logout'
         })
-        
+
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        if(myproductbtn){
+        if (myproductbtn) {
             myproductbtn.addEventListener('click', () => {
                 window.location.href = '/myproduct'
             })
         }
 
+        const admindashboardbtn = document.getElementById('sidebar-dashboard');
+        if (admindashboardbtn) {
+            admindashboardbtn.addEventListener('click', () => {
+                window.location.href = '/admin'
+            })
+        }
+
+
         const filter = document.getElementById('sidebar-filter');
-        filter.addEventListener('click',()=>{
+        filter.addEventListener('click', () => {
             window.location.href = '/filter'
         })
-        
-        
-        </script>
+
+
+    </script>
 
 </body>
 
-<script>
+<!-- <script>
     document.querySelectorAll('.like-checkbox').forEach(box => {
         box.addEventListener('change', function () {
             fetch('/like', {
@@ -112,7 +123,7 @@
         });
     });
 
-</script>
+</script> -->
 
 
 <script id="products-data" type="application/json">
@@ -129,14 +140,14 @@
 </script>
 
 
-<script>
+<!-- <script>
 fetch('/liked-products')
     .then(res => res.json())
     .then(data => {
         likedProducts = data;
         console.log('Liked products:', likedProducts);
     });
-</script>
+</script> -->
 
 <script>
 
@@ -163,15 +174,15 @@ fetch('/liked-products')
 
             <img src="/static/uploads/${p.image}">
 
-            <p><strong>Name:</strong> ${ p.name }</p>
-            <p><strong>Price:</strong> ₹${ p.price }</p>
-            <p><strong>Details:</strong> ${ p.details }</p>
-            <p><strong>Category:</strong> ${ p.category }</p>
-            <p><strong>Gender:</strong> ${ p.gender }</p>
-            <p><strong>Stock:</strong> ${ p.stock }</p>
-            <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
-            <p><strong>Product ID:</strong> ${ p.id }</p>
-            <input type="checkbox" class="like-checkbox" data-product-id="${ p.id }" ${isChecked}>
+            <p><strong>Name:</strong> ${p.name}</p>
+            <p><strong>Price:</strong> ₹${p.price}</p>
+            <p><strong>Details:</strong> ${p.details}</p>
+            <p><strong>Category:</strong> ${p.category}</p>
+            <p><strong>Gender:</strong> ${p.gender}</p>
+            <p><strong>Stock:</strong> ${p.stock}</p>
+            <p><strong>Seller ID:</strong> ${p.sellerId}</p>
+            <p><strong>Product ID:</strong> ${p.id}</p>
+            <input type="checkbox" class="like-checkbox" data-product-id="${p.id}" ${isChecked}>
 
             <div class="buybutton">
                 <a href="/buy/${p.id}">buy</a>
@@ -184,13 +195,13 @@ fetch('/liked-products')
 
 
     // when search or input is change
-    search.addEventListener('keyup', ()=> {
+    search.addEventListener('keyup', () => {
         const searchText = search.value.toLowerCase().trim();
         // console.log(searchText);
-        if(!searchText){
+        if (!searchText) {
             productdata = products;
-        }else{
-            productdata = products.filter(product => product.name.toLowerCase().trim().includes(searchText) )
+        } else {
+            productdata = products.filter(product => product.name.toLowerCase().trim().includes(searchText))
         }
 
         product_container.innerHTML = '';
@@ -202,15 +213,15 @@ fetch('/liked-products')
                 
                 <img src="/static/uploads/${p.image}">
 
-                <p><strong>Name:</strong> ${ p.name }</p>
-                <p><strong>Price:</strong> ₹${ p.price }</p>
-                <p><strong>Details:</strong> ${ p.details }</p>
-                <p><strong>Category:</strong> ${ p.category }</p>
-                <p><strong>Gender:</strong> ${ p.gender }</p>
-                <p><strong>Stock:</strong> ${ p.stock }</p>
-                <p><strong>Seller ID:</strong> ${ p.sellerId }</p>
-                <p><strong>Product ID:</strong> ${ p.id }</p>
-                <input type="checkbox" class="like-checkbox" data-product-id="${ p.id }" ${isChecked}>
+                <p><strong>Name:</strong> ${p.name}</p>
+                <p><strong>Price:</strong> ₹${p.price}</p>
+                <p><strong>Details:</strong> ${p.details}</p>
+                <p><strong>Category:</strong> ${p.category}</p>
+                <p><strong>Gender:</strong> ${p.gender}</p>
+                <p><strong>Stock:</strong> ${p.stock}</p>
+                <p><strong>Seller ID:</strong> ${p.sellerId}</p>
+                <p><strong>Product ID:</strong> ${p.id}</p>
+                <input type="checkbox" class="like-checkbox" data-product-id="${p.id}" ${isChecked}>
 
                 <div class="buybutton">
                     <a href="/buy/${p.id}">buy</a>
@@ -221,7 +232,7 @@ fetch('/liked-products')
         });
     })
 </script>
-<script>
+<!-- <script>
 document.addEventListener('change', function (e) {
     if (e.target.classList.contains('like-checkbox')) {
         const productId = parseInt(e.target.dataset.productId);
@@ -247,6 +258,40 @@ document.addEventListener('change', function (e) {
         });
     }
 });
+</script> -->
+
+
+<script>
+    // let likedProducts = JSON.parse(
+    //     document.getElementById('likes-data').textContent
+    // );
+
+    document.addEventListener('change', function (e) {
+        if (!e.target.classList.contains('like-checkbox')) return;
+
+        const productId = parseInt(e.target.dataset.productId);
+        const liked = e.target.checked;
+
+        fetch('/like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ product_id: productId, liked })
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Like failed');
+                return res.json();
+            })
+            .then(() => fetch('/liked-products'))
+            .then(res => {
+                if (!res.ok) throw new Error('Liked-products failed');
+                return res.json();
+            })
+            .then(data => {
+                likedProducts = data;
+                console.log('Updated liked:', likedProducts);
+            })
+            .catch(err => console.error(err.message));
+    });
 </script>
 
 
