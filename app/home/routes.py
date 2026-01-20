@@ -12,7 +12,7 @@ def main():
     if 'user' in session:
         return redirect(url_for('home.home'))
 
-    products = Product.query.order_by(Product.id.desc()).all()
+    products = Product.query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
 
     return render_template("main.html", products = products )
 
@@ -26,7 +26,7 @@ def home():
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
-    products = Product.query.order_by(Product.id.desc()).all()
+    products = Product.query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
 
     liked_products=[]
     liked_products = [

@@ -111,6 +111,19 @@ def update_user(user_id):
         user.email = email
         user.status = status
 
+
+        if user.user_type == "s" and status == "block":
+            Product.query.filter_by(seller_id=user.id).update(
+                {"status": "hide"}
+            )
+
+        # (optional) If seller is re-activated → show products again
+        if user.user_type == "s" and status == "active":
+            Product.query.filter_by(seller_id=user.id).update(
+                {"status": "active"}
+            )
+
+            
         db.session.commit()
         return redirect(url_for("admin.dashboard"))
 
