@@ -16,6 +16,7 @@
         <tr>
             <th>Order ID</th>
             <th>Product Name</th>
+            <th>Purchase Price</th>
             <th>Price</th>
             <th>Category</th>
             <th>Gender</th>
@@ -28,6 +29,7 @@
         <tr>
             <td>{{ order.id }}</td>
             <td>{{ order.product.product_name }}</td>
+            <td>{{ order.purchase_price }}</td>
             <td>{{ order.product.product_price }}</td>
             <td>{{ order.product.product_category }}</td>
             <td>{{ order.product.product_gender }}</td>

@@ -15,6 +15,10 @@ def buyButton(product_id):
         return redirect(url_for('auth.login'))
     product = Product.query.filter_by(id = product_id).first()
 
+    if product.status != 'active':
+        flash("Product is no longer available", "error")
+        return redirect(url_for("user.profile"))
+
     session['buy_product_id'] = product.id
 
     return render_template('buy.html', product = product)
@@ -55,15 +59,25 @@ def success():
         flash("Product out of stock")
         return redirect(url_for('home.home'))
 
-    order = Order(
+    existing_order = Order.query.filter_by(
         user_id=user.id,
         product_id=product.id,
-        quantity=1
-    )
+        purchase_price=product.product_price
+    ).first()
+
+    if existing_order:
+        existing_order.quantity += 1
+    else:
+        order = Order(
+            user_id=user.id,
+            product_id=product.id,
+            quantity=1,
+            purchase_price=product.product_price
+        )
+        db.session.add(order)
 
     product.product_stock -= 1
 
-    db.session.add(order)
     db.session.commit()
 
     session.pop('buy_product_id', None)

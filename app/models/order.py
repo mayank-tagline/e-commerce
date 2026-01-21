@@ -8,5 +8,7 @@ class Order(db.Model):
 
     quantity = db.Column(db.Integer,nullable=False,default=1)
 
+    purchase_price = db.Column(db.Integer)
+
     user = db.relationship("User", backref="orders")
     product = db.relationship("Product", backref="orders")

@@ -9,6 +9,13 @@
 </head>
 
 <body>
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
 
     <!-- HEADER -->
     <div class="header">
@@ -65,41 +72,109 @@
                 <a href="/resetpassword">Reset password</a>
             </div>
 
-            
+
+            <br><br><br>
+            <h2>My Orders</h2>
+
+            <table border="1" cellpadding="8">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Product Name</th>
+                        <th>Purchase Price</th>
+                        <th>Current Price</th>
+                        <th>Category</th>
+                        <th>Gender</th>
+                        <th>Stock</th>
+                        <th>Quantity Bought</th>
+                        <th>Image</th>
+                        <th>Buy Again</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+
+                        <td>{{ order.product.product_name }}</td>
+
+                        <td>₹ {{ order.purchase_price }}</td>
+
+                        <td>₹ {{ order.product.product_price }}</td>
+
+                        <td>{{ order.product.product_category }}</td>
+
+                        <td>{{ order.product.product_gender }}</td>
+
+                        <td>
+                            {% if order.product.product_stock > 0 %}
+                            {{ order.product.product_stock }}
+                            {% else %}
+                            <span style="color:red;">Out of stock</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ order.quantity }}</td>
+
+                        <td>
+                            <img src="{{ url_for('static', filename='uploads/' ~ order.product.product_image) }}"
+                                width="60" height="60">
+                        </td>
+
+                        <td>
+                            {% if order.product.status == 'active' and order.product.product_stock > 0 %}
+                            <a href="{{ url_for('payment.buyButton', product_id=order.product.id) }}"
+                                class="btn btn-sm btn-primary">
+                                Buy Again
+                            </a>
+                            {% else %}
+                            <span style="color:gray;">Unavailable</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">No purchases yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
 
         </div>
     </div>
-    
+
 
     <script>
         const homebtn = document.getElementById('sidebar-home')
-        homebtn.addEventListener('click', ()=> {
+        homebtn.addEventListener('click', () => {
             window.location.href = '/home';
         });
 
         const favoritebtn = document.getElementById('sidebar-favorite');
-        favoritebtn.addEventListener('click',()=> {
+        favoritebtn.addEventListener('click', () => {
             window.location.href = '/favorite';
         });
 
         const profilebtn = document.getElementById('sidebar-profile');
-        profilebtn.addEventListener('click',()=> {
+        profilebtn.addEventListener('click', () => {
             window.location.href = '/profile';
         })
-        
+
         const logoutbtn = document.getElementById('sidebar-logout');
-        logoutbtn.addEventListener('click', ()=> {
+        logoutbtn.addEventListener('click', () => {
             window.location.href = '/logout'
         })
 
 
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        if(myproductbtn){
-            myproductbtn.addEventListener('click', ()=> {
+        if (myproductbtn) {
+            myproductbtn.addEventListener('click', () => {
                 window.location.href = '/myproduct'
             })
         }
-        
+
         const admindashboardbtn = document.getElementById('sidebar-dashboard');
         if (admindashboardbtn) {
             admindashboardbtn.addEventListener('click', () => {
@@ -108,12 +183,12 @@
         }
 
         const searchbar = document.getElementById('searchbar');
-        searchbar.addEventListener('click', ()=> {
+        searchbar.addEventListener('click', () => {
             window.location.href = '/search'
         })
 
         const filter = document.getElementById('sidebar-filter');
-        filter.addEventListener('click',()=>{
+        filter.addEventListener('click', () => {
             window.location.href = '/filter'
         })
 

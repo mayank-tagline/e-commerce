@@ -1,5 +1,6 @@
 from flask import Blueprint,render_template,session,redirect,url_for
 from ..models.user import User
+from ..models.order import Order
 from ..extensions import db
 from ..forms import ResetPassword,UpdateUser
 
@@ -15,7 +16,14 @@ def profile():
 
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
-    return render_template('profile.html' , user = user)
+
+    orders = (
+        Order.query
+        .filter(Order.user_id == user.id)
+        .order_by(Order.id.desc())
+        .all()
+    )
+    return render_template('profile.html' , user = user ,orders= orders)
 
 
 
