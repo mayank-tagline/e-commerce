@@ -112,6 +112,14 @@ The primary goal of this project is to demonstrate **clean Flask architecture**,
 
 ---
 
+### Order
+- id
+- user_id
+- product_id
+- quantity
+
+---
+
 ## 🗂️ Project Structure
 
 
