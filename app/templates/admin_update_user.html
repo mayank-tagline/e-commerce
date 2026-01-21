@@ -11,10 +11,10 @@
 
 <form method="POST">
     <label>Username</label>
-    <input type="text" name="username" value="{{ user.username }}" required>
+    <input type="text" name="username" value="{{ user.username }}" required> <br> <br>
 
     <label>Email</label>
-    <input type="email" name="email" value="{{ user.email }}" required>
+    <input type="email" name="email" value="{{ user.email }}" required> <br> <br>
 
     <label>Status</label>
     <div>
@@ -25,7 +25,7 @@
         <input type="radio" name="status" value="block"
                {% if user.status == 'block' %}checked{% endif %}>
         Block
-    </div>
+    </div> <br>
 
     <button type="submit">Update</button>
 </form>
