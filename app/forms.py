@@ -78,6 +78,11 @@ class UpdateProduct(FlaskForm):
         validators=[FileAllowed(['jpg', 'jpeg', 'png'])]
     )
 
+    status = SelectField(
+        'status',
+        choices=[('active', 'Active'), ('hide', 'Hide')],
+        validators=[InputRequired()]
+    )
 
     submit = SubmitField("Update Product")
 

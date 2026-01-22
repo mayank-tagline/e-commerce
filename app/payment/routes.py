@@ -13,11 +13,18 @@ def buyButton(product_id):
 
     if 'user' not in session:
         return redirect(url_for('auth.login'))
-    product = Product.query.filter_by(id = product_id).first()
+    try:
+        product = Product.query.filter_by(id = product_id).first()
+        if product.status != 'active':
+            # flash("Product is no longer available", "error")
+            return render_template('product_not_found.html',status='block')
+    except Exception as e:
+        return render_template('product_not_found.html', error = e)
 
-    if product.status != 'active':
-        flash("Product is no longer available", "error")
-        return redirect(url_for("user.profile"))
+    
+    # if not product:
+    #     flash("no product with this id")
+    #     return render_template('product_not_found.html')
 
     session['buy_product_id'] = product.id
 

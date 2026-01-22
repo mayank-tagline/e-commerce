@@ -88,6 +88,7 @@
                     <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                     <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
                     <p><strong>Product ID:</strong> {{ product.id }}</p>
+                    <p class="product-status {{ 'status-hide' if product.status == 'hide' else 'status-active' }}"><strong>Product Status:</strong> {{ product.status }}</p>
 
                     <h3>
                         <a href="{{ url_for('product.update', product_id=product.id) }}">update your product</a>

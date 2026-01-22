@@ -81,6 +81,7 @@ def update(product_id):
         form.product_category.data = product.product_category
         form.product_gender.data = product.product_gender
         form.product_stock.data = product.product_stock
+        form.status.data = product.status
 
     if form.validate_on_submit():
         product.product_name = form.product_name.data
@@ -89,6 +90,7 @@ def update(product_id):
         product.product_category = form.product_category.data
         product.product_gender = form.product_gender.data
         product.product_stock = form.product_stock.data
+        product.status = form.status.data
 
      
         if form.product_image.data:
@@ -168,7 +170,7 @@ def myproduct():
     if price:
         query = query.filter(Product.product_price <= int(price))
 
-    products = query.filter(Product.status == 'active').order_by(Product.id.desc()).all()
+    products = query.order_by(Product.id.desc()).all()
 
     product_list = []
     for p in products:
