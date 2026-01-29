@@ -193,11 +193,15 @@
             window.location.href = '/search'
         })
 
+        const filter = document.getElementById('sidebar-filter');
+        filter.addEventListener('click',()=>{
+            window.location.href = '/filter'
+        })
     </script>
 
 </body>
 
-<script>
+<!-- <script>
     const filterBtn = document.getElementById('sidebar-filter');
     const filterDropdown = document.getElementById('filter-dropdown');
 
@@ -215,6 +219,6 @@
     priceRange.addEventListener('input', () => {
         priceValue.innerText = priceRange.value;
     });
-</script>
+</script> -->
 
 </html>

@@ -25,6 +25,8 @@ def login():
             return redirect(url_for('auth.login'))
         if user:
             session["user"] = user.username
+            if user.user_type =="admin":
+                return redirect(url_for('admin.dashboard'))
             return redirect(url_for("home.home"))
         else:
             flash("Invalid Username or password")
