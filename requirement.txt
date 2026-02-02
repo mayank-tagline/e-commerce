@@ -5,3 +5,5 @@ Flask-Migrate
 email-validator
 Flask-Mail
 python-dotenv
+Flask-SocketIO
+eventlet

@@ -14,7 +14,7 @@
     <div class="header">
         <div class="logo">My Shop</div>
 
-        <div class="searchbar"  id="searchbar">
+        <div class="searchbar" id="searchbar">
             <input type="text" placeholder="Search products..." />
         </div>
 
@@ -51,9 +51,9 @@
             <h2>Products</h2>
 
             {% if products %}
-            <div class="products">
+            <div class="products" id="products">
                 {% for product in products %}
-                <div class="product-card">
+                <div class="product-card" data-product-id="{{ product.id }}">
 
                     <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
 
@@ -65,10 +65,8 @@
                     <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                     <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
                     <p><strong>Product ID:</strong> {{ product.id }}</p>
-                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" 
-                    {% if product.id in liked_products %}
-                        checked 
-                    {% endif %}>
+                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" {% if product.id in
+                        liked_products %} checked {% endif %}>
 
                     <div class="buybutton">
                         <a href="{{ url_for('payment.buyButton', product_id=product.id) }}">buy</a>
@@ -119,7 +117,7 @@
         })
 
         const myproductbtn = document.getElementById('sidebar-myproduct');
-        if(myproductbtn){
+        if (myproductbtn) {
             myproductbtn.addEventListener('click', () => {
                 window.location.href = '/myproduct'
             })
@@ -134,12 +132,12 @@
 
 
         const searchbar = document.getElementById('searchbar');
-        searchbar.addEventListener('click', ()=> {
+        searchbar.addEventListener('click', () => {
             window.location.href = '/search'
         })
 
         const filter = document.getElementById('sidebar-filter');
-        filter.addEventListener('click',()=>{
+        filter.addEventListener('click', () => {
             window.location.href = '/filter'
         })
     </script>
@@ -163,6 +161,95 @@
                 });
 
         });
+    });
+
+</script>
+
+<!-- <script>
+    const socket = io();
+    socket.on("server_msg",function(msg){
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    console.log("SERVER SAYS:",msg)
+  });
+</script> -->
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const socket = io();
+
+        socket.on("product_added", function (product) {
+            console.log("Received:", product);
+
+            const productsDiv = document.getElementById("products");
+            if (!productsDiv) return;
+
+            const card = document.createElement("div");
+            card.className = "product-card";
+
+            card.innerHTML = `
+            <img src="/static/uploads/${product.image}">
+            <p><strong>Name:</strong> ${product.name}</p>
+            <p><strong>Price:</strong> ₹${product.price}</p>
+            <p><strong>Details:</strong> ${product.details}</p>
+            <p><strong>Category:</strong> ${product.category}</p>
+            <p><strong>Gender:</strong> ${product.gender}</p>
+            <p><strong>Stock:</strong> ${product.stock}</p>
+            <p><strong>Seller ID:</strong> ${product.seller_id}</p>
+            <p><strong>Product ID:</strong> ${product.id}</p>
+            <div class="buybutton">
+                <a href="/buy/${product.id}">buy</a>
+                </div>
+                `;
+
+            productsDiv.prepend(card);
+        });
+
+        socket.on("product_deleted", data => {
+            console.log("Product deleted:", data.id);
+            const card = document.querySelector(`.product-card[data-product-id="${data.id}"]`);
+            if (card) {
+                // Remove the card from DOM
+                card.remove();
+            }
+        });
+        socket.on("product_updated", function (product) {
+            console.log("Product updated:", product);
+
+            const card = document.querySelector(
+                `.product-card[data-product-id="${product.id}"]`
+            );
+            if (product.status === "hide") {
+                if (card) {
+                    card.remove();   // remove from UI
+                }
+                return; // stop further execution
+            }
+
+            if (!card) {
+                console.warn("Product card not found:", product.id);
+                location.reload();
+                return;
+            }
+
+            card.innerHTML = `
+                <img src="/static/uploads/${product.image}">
+                <p><strong>Name:</strong> ${product.name}</p>
+                <p><strong>Price:</strong> ₹${product.price}</p>
+                <p><strong>Details:</strong> ${product.details}</p>
+                <p><strong>Category:</strong> ${product.category}</p>
+                <p><strong>Gender:</strong> ${product.gender}</p>
+                <p><strong>Stock:</strong> ${product.stock}</p>
+                <p><strong>Seller ID:</strong> ${product.seller_id}</p>
+                <p><strong>Product ID:</strong> ${product.id}</p>
+                <div class="buybutton">
+                    <a href="/buy/${product.id}">buy</a>
+                    </div>
+                    `;
+        });
+
     });
 
 </script>

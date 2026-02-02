@@ -1,9 +1,9 @@
-from flask import Blueprint,session,redirect,url_for,render_template,abort,request,current_app
+from flask import Blueprint,session,redirect,url_for,render_template,abort,flash,request,current_app
 from ..models.product import Product
 from ..models.user import User
 from werkzeug.utils import secure_filename
 from ..forms import AddProduct,UpdateProduct
-from ..extensions import db
+from ..extensions import db,socketio
 import os
 
 
@@ -54,6 +54,7 @@ def addproduct(seller_id):
         )
         db.session.add(product)
         db.session.commit()
+        socketio.emit("product_added",product.to_dict())
         return redirect(url_for('product.myproduct'))
 
     return render_template ('addProduct.html', form = form)
@@ -72,6 +73,11 @@ def update(product_id):
         abort(404),404
 
     product = Product.query.get_or_404(product_id)
+
+    seller = User.query.get(product.seller_id)
+    if seller.status =="block":
+        flash("user is block we can not update product ")
+        return redirect(url_for('admin.dashboard'))
     form = UpdateProduct()
 
     if request.method == 'GET':
@@ -105,7 +111,20 @@ def update(product_id):
             product.product_image = filename
 
         db.session.commit()
-        return redirect(url_for('home.home'))
+        socketio.emit("product_updated",product.to_dict())
+
+        # socketio.emit("product_updated",
+        # {
+        #     "id": product.id,
+        #     "name": product.product_name,
+        #     "price": product.product_price,
+        #     "stock": product.product_stock,
+        #     "status": product.status
+        # },
+        # )
+        if user.user_type == "admin":
+            return redirect(url_for('admin.dashboard'))
+        return redirect(url_for('product.myproduct'))
 
     return render_template('update.html', form=form, product=product)
 
@@ -127,15 +146,23 @@ def delete(product_id):
     if user.user_type == 'admin':
         db.session.delete(product)
         db.session.commit()
+        socketio.emit("product_deleted",
+        {"id": product.id},
+        )
         return redirect(url_for('admin.dashboard'))
 
     # Seller can delete only his own product
     elif user.user_type == 's' and product.seller_id == user.id:
         db.session.delete(product)
         db.session.commit()
+        socketio.emit("product_deleted",
+        {"id": product.id},
+        )
+
 
     else:
         abort(403)
+        # return "403"
 
     return redirect(url_for('product.myproduct'))
 
@@ -149,6 +176,8 @@ def myproduct():
     
     username = session.get('user')
     user = User.query.filter_by(username= username).first()
+    # if user.user_type =='admin':
+    #     return redirect(url_for('admin.seller_products',seller_id=user.id))
     if user.user_type !='s':
         abort(404)
 

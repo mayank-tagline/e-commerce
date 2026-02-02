@@ -12,3 +12,17 @@ class Product(db.Model):
     status = db.Column(db.String(10),nullable=False,default='active')
     # product_seller = db.Column(db.Integer)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.product_name,
+            "price": self.product_price,
+            "image": self.product_image,
+            "details": self.product_details,
+            "category": self.product_category,
+            "gender": self.product_gender,
+            "stock": self.product_stock,
+            "seller_id": self.seller_id,
+            "status": self.status,
+        }
