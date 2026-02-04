@@ -30,28 +30,67 @@ def favorite():
 
 
 
+# @interaction_bp.route('/like', methods=['POST'])
+# def like():
+#     data = request.get_json()
+
+#     username = session.get('user')
+#     user = User.query.filter_by(username = username).first()
+#     user_id = user.id
+
+#     product_id = data['product_id']
+#     liked = data['liked']
+
+#     record = UserProduct.query.filter_by(
+#         user_id=user_id,
+#         product_id=product_id
+#     ).first()
+
+#     if liked:
+#         if record:
+#             return jsonify({'status': 'already liked'})
+
+#         db.session.add(UserProduct(
+#             user_id=user_id,
+#             product_id=product_id
+#         ))
+#         db.session.commit()
+#         return jsonify({'status': 'liked'})
+
+#     else:
+#         if record:
+#             db.session.delete(record)
+#             db.session.commit()
+#         return jsonify({'status': 'unliked'})
 @interaction_bp.route('/like', methods=['POST'])
 def like():
-    data = request.get_json()
-
     username = session.get('user')
-    user = User.query.filter_by(username = username).first()
-    user_id = user.id
+    if not username:
+        return jsonify({'error': 'unauthorized'}), 401
 
-    product_id = data['product_id']
-    liked = data['liked']
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({'error': 'invalid json'}), 400
+
+    product_id = int(data.get('product_id'))
+    liked = data.get('liked')
+
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'error': 'user not found'}), 404
 
     record = UserProduct.query.filter_by(
-        user_id=user_id,
+        user_id=user.id,
         product_id=product_id
     ).first()
 
     if liked:
+        # ✅ IMPORTANT FIX
         if record:
-            return jsonify({'status': 'already liked'})
+            return jsonify({'status': 'already liked'})  # STOP here
 
         db.session.add(UserProduct(
-            user_id=user_id,
+            user_id=user.id,
             product_id=product_id
         ))
         db.session.commit()

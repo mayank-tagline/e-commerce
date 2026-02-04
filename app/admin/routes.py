@@ -42,12 +42,13 @@ def dashboard():
 
     products = Product.query.order_by(Product.id.desc()).all()
     users = User.query.order_by(User.id.desc()).all()
+    orders = Order.query.order_by(Order.id.desc()).all()
 
     liked_products = [
         up.product_id for up in UserProduct.query.filter_by(user_id = admin.id).all()
     ]
     
-    return render_template("admin_dashboard.html",user= admin,users=users,products = products,liked_products = liked_products)
+    return render_template("admin_dashboard.html",user= admin,users=users,products = products,liked_products = liked_products,orders = orders)
 
 
 @admin_bp.route("/seller/<int:seller_id>/products")

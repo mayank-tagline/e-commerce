@@ -55,7 +55,7 @@
             {% if products %}
             <div class="products">
                 {% for product in products %}
-                <div class="product-card">
+                <div class="product-card" data-product-id="{{ product.id }}">
 
                     <img src="{{ url_for('static', filename='uploads/' + product.product_image) }}">
 
@@ -151,6 +151,79 @@
 
         });
     });
+
+</script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        
+        const socket = io();
+        
+        socket.on("product_added", function (product) {
+            console.log("Received:", product);
+            
+            const productsDiv = document.getElementById("products");
+            if (!productsDiv) return;
+            
+            const card = document.createElement("div");
+            card.className = "product-card";
+            
+            card.innerHTML = `
+            <img src="/static/uploads/${product.image}">
+            <p><strong>Name:</strong> ${product.name}</p>
+            <p><strong>Price:</strong> ₹${product.price}</p>
+            <p><strong>Details:</strong> ${product.details}</p>
+            <p><strong>Category:</strong> ${product.category}</p>
+            <p><strong>Gender:</strong> ${product.gender}</p>
+            <p><strong>Stock:</strong> ${product.stock}</p>
+            <p><strong>Seller ID:</strong> ${product.seller_id}</p>
+            <p><strong>Product ID:</strong> ${product.id}</p>
+            <div class="buybutton">
+                <a href="/buy/${product.id}">buy</a>
+                </div>
+                `;
+                
+                productsDiv.prepend(card);
+            });
+            
+            socket.on("product_deleted", data => {
+                console.log("Product deleted:", data.id);
+                const card = document.querySelector(`.product-card[data-product-id="${data.id}"]`);
+                if (card) {
+                    // Remove the card from DOM
+                    card.remove();
+                }
+            });
+            socket.on("product_updated", function (product) {
+                console.log("Product updated:", product);
+                
+                const card = document.querySelector(
+                    `.product-card[data-product-id="${product.id}"]`
+                );
+                
+                if (!card) {
+                    console.warn("Product card not found:", product.id);
+                    return;
+                }
+                
+                card.innerHTML = `
+                <img src="/static/uploads/${product.image}">
+                <p><strong>Name:</strong> ${product.name}</p>
+                <p><strong>Price:</strong> ₹${product.price}</p>
+                <p><strong>Details:</strong> ${product.details}</p>
+                <p><strong>Category:</strong> ${product.category}</p>
+                <p><strong>Gender:</strong> ${product.gender}</p>
+                <p><strong>Stock:</strong> ${product.stock}</p>
+                <p><strong>Seller ID:</strong> ${product.seller_id}</p>
+                <p><strong>Product ID:</strong> ${product.id}</p>
+                <div class="buybutton">
+                    <a href="/buy/${product.id}">buy</a>
+                    </div>
+                    `;
+                });
+                
+            });
 
 </script>
 
