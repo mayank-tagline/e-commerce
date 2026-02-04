@@ -146,9 +146,9 @@ def delete(product_id):
 # Admin can delete any product
     if user.user_type == 'admin':
         db.session.delete(product)
-        orders = Order.query.filter_by(product_id=product.id).all()
-        for order in orders:
-            db.session.delete(order)
+        # orders = Order.query.filter_by(product_id=product.id).all()
+        # for order in orders:
+        #     db.session.delete(order)
         db.session.commit()
         socketio.emit("product_deleted",
         {"id": product.id},
@@ -158,9 +158,9 @@ def delete(product_id):
     # Seller can delete only his own product
     elif user.user_type == 's' and product.seller_id == user.id:
         db.session.delete(product)
-        orders = Order.query.filter_by(product_id=product.id).all()
-        for order in orders:
-            db.session.delete(order)
+        # orders = Order.query.filter_by(product_id=product.id).all()
+        # for order in orders:
+        #     db.session.delete(order)
         db.session.commit()
         socketio.emit("product_deleted",
         {"id": product.id},

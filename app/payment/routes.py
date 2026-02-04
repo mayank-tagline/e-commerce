@@ -70,6 +70,11 @@ def success():
     order = Order(
         user_id=user.id,
         product_id=product.id,
+        product_name=product.product_name,
+        product_image=product.product_image,
+        product_category=product.product_category,
+        product_gender=product.product_gender,
+        seller_id=product.seller_id,
         quantity=1,
         purchase_price=product.product_price
     )
