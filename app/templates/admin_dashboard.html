@@ -71,11 +71,11 @@
         <div class="main">
 
             {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                    {% for message in messages %}
-                        <p>{{ message }}</p>
-                    {% endfor %}
-                {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+            {% endif %}
             {% endwith %}
 
             {% if users %}
@@ -167,7 +167,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="products-body">
                     {% for product in products %}
                     <tr id="product-{{ product.id }}">
                         <td>{{ product.id }}</td>
@@ -180,8 +180,8 @@
                         <td>{{ product.status }}</td>
                         <td>
                             <a href="{{ url_for('product.update', product_id=product.id) }}">
-                                    Edit
-                                </a>
+                                Edit
+                            </a>
                             <form method="POST" action="{{ url_for('product.delete', product_id=product.id) }}"
                                 style="display:inline;" onsubmit="return confirm('Delete this product?');">
                                 <button type="submit">Delete</button>
@@ -211,7 +211,7 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="orders-table-body">
                     {% for order in orders %}
                     <tr>
                         <td>{{ order.id }}</td>
@@ -300,5 +300,108 @@
         priceValue.innerText = priceRange.value;
     });
 </script> -->
+
+
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const socket = io();
+
+        const tbody = document.getElementById("products-body");
+        if (!tbody) {
+            console.error("products-body not found")
+            return;
+        }
+
+        socket.on("product_added", function (product) {
+            console.log("Product added:", product);
+
+
+            // avoid duplicate row
+            if (document.getElementById(`product-${product.id}`)) return;
+
+            const row = document.createElement("tr");
+            row.id = `product-${product.id}`;
+
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>₹${product.price}</td>
+                <td>${product.category}</td>
+                <td>${product.gender}</td>
+                <td>${product.stock}</td>
+                <td>${product.seller_id}</td>
+                <td>${product.status}</td>
+                <td>
+                    <a href="/update/${product.id}">Edit</a>
+                    <form method="POST" action="/delete/${product.id}" style="display:inline;"
+                          onsubmit="return confirm('Delete this product?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            `;
+
+            tbody.prepend(row); // add at top
+        });
+
+
+        socket.on("product_deleted", data => {
+            console.log("Product deleted:", data.id);
+            const row = document.getElementById(`product-${data.id}`);
+            if (row) {
+                row.remove();
+            }
+        });
+        socket.on("product_updated", function (product) {
+            console.log("Product updated:", product);
+            const row = document.getElementById(`product-${product.id}`);
+            if (!row) return;
+
+            row.innerHTML = `
+                <td>${product.id}</td>
+                <td>${product.name}</td>
+                <td>₹${product.price}</td>
+                <td>${product.category}</td>
+                <td>${product.gender}</td>
+                <td>${product.stock}</td>
+                <td>${product.seller_id}</td>
+                <td>${product.status}</td>
+                <td>
+                    <a href="/update/${product.id}">Edit</a>
+                    <form method="POST" action="/delete/${product.id}" style="display:inline;"
+                          onsubmit="return confirm('Delete this product?');">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            `;
+        });
+
+
+
+        socket.on("order_created", function (order) {
+            console.log("order place :", order)
+            const tbody = document.getElementById("orders-table-body");
+            if (!tbody) return;
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${order.order_id}</td>
+                <td>${order.user_id}</td>
+                <td>${order.product.id}</td>
+                <td>${order.quantity}</td>
+                <td>₹${order.purchase_price}</td>
+            `;
+
+            // Add newest order on top
+            tbody.prepend(row);
+        })
+
+    });
+
+</script>
 
 </html>

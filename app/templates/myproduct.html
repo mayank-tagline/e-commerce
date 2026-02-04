@@ -265,14 +265,19 @@
             <p><strong>Stock:</strong> ${product.stock}</p>
             <p><strong>Seller ID:</strong> ${product.seller_id}</p>
             <p><strong>Product ID:</strong> ${product.id}</p>
+            <p class="product-status ${
+               product.status === 'hide' ? 'status-hide' : 'status-active'
+           }">
+               <strong>Product Status:</strong> ${product.status}
+           </p>
              <h3>
             <a href="/product/update/${product.id}">Update your product</a>
-        </h3>
+            </h3>
 
-        <form method="post" action="/product/delete/${product.id}" class="delete-form"
-            onsubmit="return confirm('Are you sure you want to delete this product?');">
-            <button type="submit">Delete your product</button>
-        </form>
+            <form method="post" action="/product/delete/${product.id}" class="delete-form"
+                onsubmit="return confirm('Are you sure you want to delete this product?');">
+                <button type="submit">Delete your product</button>
+            </form>
                 `;
                 
                 productsDiv.prepend(card);
@@ -310,6 +315,19 @@
             <p><strong>Stock:</strong> ${product.stock}</p>
             <p><strong>Seller ID:</strong> ${product.seller_id}</p>
             <p><strong>Product ID:</strong> ${product.id}</p>
+            <p class="product-status ${
+               product.status === 'hide' ? 'status-hide' : 'status-active'
+           }">
+               <strong>Product Status:</strong> ${product.status}
+           </p>
+            <h3>
+                <a href="/product/update/${product.id}">Update your product</a>
+            </h3>
+
+            <form method="post" action="/product/delete/${product.id}" class="delete-form"
+                onsubmit="return confirm('Are you sure you want to delete this product?');">
+                <button type="submit">Delete your product</button>
+            </form>
                 `;
             });
                 

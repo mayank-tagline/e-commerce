@@ -13,6 +13,14 @@ class Product(db.Model):
     # product_seller = db.Column(db.Integer)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+
+    orders = db.relationship(
+        'Order',
+        backref='product',
+        cascade='all, delete-orphan',  # automatically delete orders
+        passive_deletes=True
+    )
+    
     def to_dict(self):
         return {
             "id": self.id,

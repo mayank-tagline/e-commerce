@@ -65,7 +65,7 @@
                     <p><strong>Stock:</strong> {{ product.product_stock }}</p>
                     <p><strong>Seller ID:</strong> {{ product.seller_id }}</p>
                     <p><strong>Product ID:</strong> {{ product.id }}</p>
-                    <input type="checkbox" class="like-checkbox" data-product-id="{{ product.id }}" {% if product.id in
+                    <input type="checkbox" class="like-checkbox" id="like-{{product.id}}" name="like_{{product.id}}" data-product-id="{{ product.id }}" {% if product.id in
                         liked_products %} checked {% endif %}>
 
                     <div class="buybutton">
@@ -145,24 +145,46 @@
 </body>
 
 <script>
-    document.querySelectorAll('.like-checkbox').forEach(box => {
-        box.addEventListener('change', function () {
-            fetch('/like', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    product_id: this.dataset.productId,
-                    liked: this.checked
-                })
-            })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data.status);
-                });
+    // document.querySelectorAll('.like-checkbox').forEach(box => {
+    //     box.addEventListener('change', function () {
+    //         fetch('/like', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({
+    //                 product_id: this.dataset.productId,
+    //                 liked: this.checked
+    //             })
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => {
+    //                 console.log(data.status);
+    //             });
 
-        });
+    //     });
+    // });
+
+    // this is for the new product that is add using websocket
+document.addEventListener('change', function (e) {
+    if (!e.target.classList.contains('like-checkbox')) return;
+
+    const checkbox = e.target;
+
+    fetch('/like', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            product_id: checkbox.dataset.productId,
+            liked: checkbox.checked
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        console.log('Like status:', data.status);
+    })
+    .catch(err => {
+        console.log('Like error:', err);
     });
-
+});
 </script>
 
 <!-- <script>
@@ -188,6 +210,7 @@
 
             const card = document.createElement("div");
             card.className = "product-card";
+            // card.setAttribute("data-product-id", product.id);
 
             card.innerHTML = `
             <img src="/static/uploads/${product.image}">
@@ -199,6 +222,7 @@
             <p><strong>Stock:</strong> ${product.stock}</p>
             <p><strong>Seller ID:</strong> ${product.seller_id}</p>
             <p><strong>Product ID:</strong> ${product.id}</p>
+            <input type="checkbox" class="like-checkbox" data-product-id="${product.id}">
             <div class="buybutton">
                 <a href="/buy/${product.id}">buy</a>
                 </div>
@@ -244,6 +268,7 @@
                 <p><strong>Stock:</strong> ${product.stock}</p>
                 <p><strong>Seller ID:</strong> ${product.seller_id}</p>
                 <p><strong>Product ID:</strong> ${product.id}</p>
+                <input type="checkbox" class="like-checkbox" data-product-id="${product.id}">
                 <div class="buybutton">
                     <a href="/buy/${product.id}">buy</a>
                     </div>

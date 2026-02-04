@@ -76,6 +76,7 @@
                         <th>Product Name</th>
                         <th>Purchase Price</th>
                         <th>Current Price</th>
+                        <th>Seller_id</th>
                         <th>Category</th>
                         <th>Gender</th>
                         <th>Stock</th>
@@ -85,16 +86,24 @@
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="orders-table-body">
                     {% for order in orders %}
                     <tr>
                         <td>{{ order.id }}</td>
 
-                        <td>{{ order.product.product_name }}</td>
+                        <td>
+                            {% if order.product %}
+                            {{ order.product.product_name }}
+                            {% else %}
+                            <span style="color:red;">Product deleted</span>
+                            {% endif %}
+                        </td>
 
                         <td>₹ {{ order.purchase_price }}</td>
 
                         <td>₹ {{ order.product.product_price }}</td>
+
+                        <td>{{ order.product.seller_id }}</td>
 
                         <td>{{ order.product.product_category }}</td>
 
@@ -111,20 +120,27 @@
                         <td>{{ order.quantity }}</td>
 
                         <td>
+                            {% if order.product %}
                             <img src="{{ url_for('static', filename='uploads/' ~ order.product.product_image) }}"
                                 width="60" height="60">
+                            {% else %}
+                            N/A
+                            {% endif %}
                         </td>
 
+
                         <td>
-                            {% if order.product.status == 'active' and order.product.product_stock > 0 %}
-                            <a href="{{ url_for('payment.buyButton', product_id=order.product.id) }}"
-                                class="btn btn-sm btn-primary">
+                            {% if order.product
+                            and order.product.status == 'active'
+                            and order.product.product_stock > 0 %}
+                            <a href="{{ url_for('payment.buyButton', product_id=order.product.id) }}">
                                 Buy Again
                             </a>
                             {% else %}
                             <span style="color:gray;">Unavailable</span>
                             {% endif %}
                         </td>
+
                     </tr>
                     {% else %}
                     <tr>
@@ -188,5 +204,59 @@
     </script>
 
 </body>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const socket = io();
+
+
+        socket.on("order_created", function (order) {
+            console.log("order place :", order);
+
+            const tbody = document.getElementById("orders-table-body");
+            if (!tbody) {
+                console.error("orders-table-body not found");
+                return;
+            }
+
+            const product = order.product;
+
+            // Stock display
+            let stockHtml = product.stock > 0
+                ? product.stock
+                : `<span style="color:red;">Out of stock</span>`;
+
+            // Buy again logic
+            let buyAgainHtml =
+                product.stock > 0
+                    ? `<a href="/buy/${product.id}">Buy Again</a>`
+                    : `<span style="color:gray;">Unavailable</span>`;
+
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${order.order_id}</td>
+                <td>${product.name}</td>
+                <td>₹ ${order.purchase_price}</td>
+                <td>₹ ${product.current_price}</td>
+                <td>${product.seller_id}</td>
+                <td>${product.category}</td>
+                <td>${product.gender}</td>
+                <td>${stockHtml}</td>
+                <td>${order.quantity}</td>
+                <td>
+                    <img src="/static/uploads/${product.image}" width="60" height="60">
+                </td>
+                <td>${buyAgainHtml}</td>
+            `;
+            // Add new order on top
+            tbody.prepend(row);
+        })
+
+    });
+</script>
 
 </html>

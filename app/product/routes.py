@@ -1,6 +1,7 @@
 from flask import Blueprint,session,redirect,url_for,render_template,abort,flash,request,current_app
 from ..models.product import Product
 from ..models.user import User
+from ..models.order import Order
 from werkzeug.utils import secure_filename
 from ..forms import AddProduct,UpdateProduct
 from ..extensions import db,socketio
@@ -145,6 +146,9 @@ def delete(product_id):
 # Admin can delete any product
     if user.user_type == 'admin':
         db.session.delete(product)
+        orders = Order.query.filter_by(product_id=product.id).all()
+        for order in orders:
+            db.session.delete(order)
         db.session.commit()
         socketio.emit("product_deleted",
         {"id": product.id},
@@ -154,6 +158,9 @@ def delete(product_id):
     # Seller can delete only his own product
     elif user.user_type == 's' and product.seller_id == user.id:
         db.session.delete(product)
+        orders = Order.query.filter_by(product_id=product.id).all()
+        for order in orders:
+            db.session.delete(order)
         db.session.commit()
         socketio.emit("product_deleted",
         {"id": product.id},

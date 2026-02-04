@@ -3,7 +3,7 @@ from ..models.product import Product
 from ..models.user import User
 from ..models.order import Order
 
-from ..extensions import db
+from ..extensions import db,socketio
 
 
 payment_bp = Blueprint('payment',__name__)
@@ -66,26 +66,35 @@ def success():
         flash("Product out of stock")
         return redirect(url_for('home.home'))
 
-    existing_order = Order.query.filter_by(
+   
+    order = Order(
         user_id=user.id,
         product_id=product.id,
+        quantity=1,
         purchase_price=product.product_price
-    ).first()
-
-    if existing_order:
-        existing_order.quantity += 1
-    else:
-        order = Order(
-            user_id=user.id,
-            product_id=product.id,
-            quantity=1,
-            purchase_price=product.product_price
-        )
-        db.session.add(order)
+    )
+    db.session.add(order)
 
     product.product_stock -= 1
 
     db.session.commit()
+    socketio.emit("order_created",{
+        "order_id": order.id,
+        "quantity":order.quantity,
+        "purchase_price":order.purchase_price,
+        "product":{
+                    "id":product.id,
+                    "name":product.product_name,
+                    "current_price": product.product_price,
+                    "category": product.product_category,
+                    "gender": product.product_gender,
+                    "stock": product.product_stock,
+                    "seller_id": product.seller_id,
+                    "image": product.product_image,
+                    },
+        "user_id":user.id,
+    })
+
 
     session.pop('buy_product_id', None)
     return render_template('success.html')
