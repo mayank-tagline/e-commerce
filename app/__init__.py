@@ -1,6 +1,7 @@
 from flask import Flask,render_template
 from config import Config
-from app.extensions import db,migrate,mail
+from app.extensions import db,migrate,mail,socketio
+from flask_socketio import emit
 # from .extensions import db
 # import os
 # from .user.home import user_bp
@@ -13,6 +14,7 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app,db)
     mail.init_app(app)
+    socketio.init_app(app)
 
     from .auth.routes import auth_bp
     from .filter.routes import filter_bp
@@ -40,6 +42,13 @@ def create_app():
         return render_template("404.html"), 404
 
     return app
+
+
+# @socketio.on("connect")
+# def on_connect():
+#     print("✅ Client connected")
+#     emit("server_msg","Hello from server")
+
 
     # app.secret_key = "tagline"
 

@@ -26,7 +26,7 @@
 
     <tbody>
         {% for product in products %}
-        <tr>
+        <tr data-product-id="{{ product.id }}">
             <td>{{ product.id }}</td>
             <td>{{ product.product_name }}</td>
             <td>{{ product.product_price }}</td>
@@ -55,4 +55,81 @@
 </table>
 
 </body>
+
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const socket = io();
+
+    const tableBody = document.querySelector("table tbody");
+
+    // ---------- PRODUCT ADDED ----------
+    socket.on("product_added", function(product) {
+        console.log("Product added:", product);
+
+        // Create new table row
+        const tr = document.createElement("tr");
+        tr.setAttribute("data-product-id", product.id);
+
+        tr.innerHTML = `
+            <td>${product.id}</td>
+            <td>${product.name}</td>
+            <td>${product.price}</td>
+            <td>${product.stock}</td>
+            <td>${product.category}</td>
+            <td>${product.gender}</td>
+            <td>${product.status}</td>
+            <td>
+                <a href="/product/update/${product.id}">
+                    <button type="button">Update</button>
+                </a>
+                <form action="/product/delete/${product.id}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        `;
+
+        tableBody.append(tr); // add to top
+    });
+
+    // ---------- PRODUCT UPDATED ----------
+    socket.on("product_updated", function(product) {
+        console.log("Product updated:", product);
+
+        const tr = document.querySelector(`tr[data-product-id="${product.id}"]`);
+        if (!tr) {
+            console.warn("Product row not found:", product.id);
+            return;
+        }
+
+        // Update the row cells
+        tr.innerHTML = `
+            <td>${product.id}</td>
+            <td>${product.name}</td>
+            <td>${product.price}</td>
+            <td>${product.stock}</td>
+            <td>${product.category}</td>
+            <td>${product.gender}</td>
+            <td>${product.status}</td>
+            <td>
+                <a href="/product/update/${product.id}">
+                    <button type="button">Update</button>
+                </a>
+                <form action="/product/delete/${product.id}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        `;
+    });
+
+    // ---------- PRODUCT DELETED ----------
+    socket.on("product_deleted", function(data) {
+        console.log("Product deleted:", data.id);
+        const tr = document.querySelector(`tr[data-product-id="${data.id}"]`);
+        if (tr) tr.remove();
+    });
+});
+</script>
+
 </html>

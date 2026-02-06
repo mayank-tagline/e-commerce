@@ -222,7 +222,7 @@ Create a `.env` file in the project root:
 ```env
 SECRET_KEY=your_key
 DATABASE_URL=sqlite:///data.db
-MAIL_ID=mayankdri.tagline@gmail.com
+MAIL_ID=your_gmail@gmail.com
 MAIL_PASSWORD=your_email_app_password
 ```
 
