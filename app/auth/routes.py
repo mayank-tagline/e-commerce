@@ -20,16 +20,20 @@ def login():
             username= form.username.data,
             password = form.password.data
         ).first()
-        if user.status =='block':
-            flash('your account has been blocked by admin')
+        if not user:
+            flash("Invalid username or password")
             return redirect(url_for('auth.login'))
-        if user:
-            session["user"] = user.username
-            if user.user_type =="admin":
-                return redirect(url_for('admin.dashboard'))
-            return redirect(url_for("home.home"))
-        else:
-            flash("Invalid Username or password")
+
+        if user.status == 'block':
+            flash('Your account has been blocked by admin')
+            return redirect(url_for('auth.login'))
+
+        session["user"] = user.username
+
+        if user.user_type == "admin":
+            return redirect(url_for('admin.dashboard'))
+
+        return redirect(url_for("home.home"))
 
     return render_template("login.html", form= form)
 
